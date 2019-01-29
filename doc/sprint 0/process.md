@@ -1,4 +1,5 @@
-#Process for Sprint 0
+# Process for Sprint 0
+
 The team gathered in person to brainstorm the concept of the project. To discuss ideas, assign tasks, and organize meetings, we used Facebook Messenger. The decisions made for Sprint 0 were all made as a team; one person would suggest an idea and the other memebers would give feedback. The main purpose of this meeting was to come up with the general idea for the project, break that into user stories, discuss UI, and competition. 
 
 A few ideas were thrown out there, but a team memeber suggested a location-based app idea that we decided to pursue. In particular, we discussed which features the app would have, what type of person would use it, and how the app should be designed. We also considered competition; which websites and apps are similar, and what makes ours different. After coming up with the main idea, each team memeber used Pivotal Tracker to add user stories to the product backlog, and we discussed the importance of each user story to give a general ranking.
