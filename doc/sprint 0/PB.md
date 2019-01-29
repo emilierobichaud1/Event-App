@@ -1,7 +1,5 @@
 # Product backlog
 
-Note: Need to dicuss the size of these stories.
-
 | User Story                                                                       | Size | Importance |
 | -------------------------------------------------------------------------------- | ---- | ---------- |
 | As a user I would like to create an account and a profile on the app.            | 5    | 1          |
