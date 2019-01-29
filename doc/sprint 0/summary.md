@@ -7,8 +7,7 @@
 
 ## Key users:
 1. **Group creators:** describes the types of users who are looking to create a new event/meet-up, and are looking for people to join.
-2. **Existing groups:** describes users who already have an established club/group and are looking for new people to join them.
-3. **Browsers/attendees:** describes users who are interested in joining groups, such as people who have recently moved to a new location. These users will be interested in the search/exploration features that will allow them to find events that suit their interests.
+2. **Browsers/attendees:** describes users who are interested in joining groups, such as people who have recently moved to a new location. These users will be interested in the search/exploration features that will allow them to find events that suit their interests.
 
 ## Scenarios:
 1. Jerry loves to play basketball, but his town doesn’t have any basketball clubs and he has no friends to play basketball with. Jerry needs an easy way to set up his own basketball games for others in his area to join. 
