@@ -3,7 +3,7 @@
 
 2) When opening the app as an existing user, I want to be able to log in using the credentials specified when I created my account, and access the information associated with my account. 
 
-3) As a user of the app, and someone that wants to organize an app, I would like to be able to organize an event on the app so other people can attend. 
+3) As a user of the app, and someone that wants to organize an event, I would like to be able to organize an event on the app so other people can attend; this should be a simple, seamless process.
 
 4) When looking for events, I'd like to be able to search by keyword/category or by location using the map. 
 
@@ -17,4 +17,4 @@
 
 9) Given that I'm a user of the app, I would like to be able to customize settings for the app.
 
-10) Given that I'm a user of the app who is attending apps, I want to be reminded of upcoming events.  
+10) Given that I'm a user of the app who is attending events, I want to be reminded of upcoming events.  
