@@ -4,6 +4,7 @@
 - Login and registration are very important so we should prioritize it
 - Need to ask for clarification about certain criteria for Sprint 1
 - Breaking down stories into tasks
+- What stories shoudl we do and how we handl stores we are unable to complete on time
 
 ## Participants
 - Aldrin Ramiro (ramiroal)
@@ -17,7 +18,9 @@
 | ------------------------------------------------------------------------------------------------------------------------ | ---- | ---------- |
 | As a user I would like to create an account and a profile on the app so that I can follow events on this app.            | 8    | 1          |
 | As an existing user, I should be able to log in to my account so that I can follow events on this app.                   | 3    | 2          |
+| As an event organizer, I would like to organize events on the app so that I can invite more people to these events.      | 3    | 3          |
 
 ### Tasks
 - Design login page
-- Store user login stuff in a database
+- Store login stuff in a database
+- Make event page
