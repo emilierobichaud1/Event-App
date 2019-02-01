@@ -18,10 +18,13 @@
 | User Story                                                                                                               | Size | Importance |
 | ------------------------------------------------------------------------------------------------------------------------ | ---- | ---------- |
 | As a user I would like to create an account and a profile on the app so that I can follow events on this app.            | 8    | 1          |
-| As an existing user, I should be able to log in to my account so that I can follow events on this app.                   | 3    | 2          |
-| As an event organizer, I would like to organize events on the app so that I can invite more people to these events.      | 3    | 3          |
-
-### Tasks
+**Tasks:**
 - Design login page
-- Store login stuff in a database
-- Keep track of event creation
+
+| As an existing user, I should be able to log in to my account so that I can follow events on this app.                   | 3    | 2          |
+**Tasks:**
+- Store login details in database
+
+| As an event organizer, I would like to organize events on the app so that I can invite more people to these events.      | 3    | 3          |
+**TASKS:**
+- Keep track of event creation in database
