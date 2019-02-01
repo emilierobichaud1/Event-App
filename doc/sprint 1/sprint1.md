@@ -4,7 +4,8 @@
 - Login and registration are very important so we should prioritize it
 - Need to ask for clarification about certain criteria for Sprint 1
 - Breaking down stories into tasks
-- What stories shoudl we do and how we handl stores we are unable to complete on time
+- What stories should we do and how we handle stores we are unable to complete on time
+- Release planning
 
 ## Participants
 - Aldrin Ramiro (ramiroal)
@@ -23,4 +24,4 @@
 ### Tasks
 - Design login page
 - Store login stuff in a database
-- Make event page
+- Keep track of event creation
