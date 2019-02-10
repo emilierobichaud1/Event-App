@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Team Rocket Event App</string>
+    <string name="Logo_text">Logo Placeholder</string>
+    <string name="log_in">Log In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="enter_username">Username</string>
+    <string name="enter_password">Password</string>
+    <string name="cancel_login">Cancel</string>
+    <string name="enter_email">Email Address</string>
+    <string name="enter_address">Address</string>
+    <string name="enter_birthdate">Birthdate</string>
+    <string name="confirm_password">Confirm Password</string>
+</resources>
