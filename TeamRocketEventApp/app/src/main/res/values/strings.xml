@@ -10,4 +10,11 @@
     <string name="enter_address">Address</string>
     <string name="enter_birthdate">Birthdate</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="event_date">Date:</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_sign_up">Sign up for this event</string>
+    <string name="event_attendees"># of Attendees:</string>
+    <string name="event_location">Location:</string>
+    <string name="event_time">Time:</string>
+    <string name="event_host">Host:</string>
 </resources>
