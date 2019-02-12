@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
@@ -33,12 +35,12 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
         mAuth = FirebaseAuth.getInstance();
 
+        //Get parts of the layout
         signupButton = (Button) findViewById(R.id.signupButton);
         cancelButton = (Button) findViewById(R.id.cancelButton);
         userText = (EditText) findViewById(R.id.usernameEditText);
@@ -54,19 +56,25 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void registerUser() {
-        String user = userText.getText().toString().trim();
+        //Get info from fields
+        String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
         String bday = bdayText.getText().toString().trim();
         String address = addressText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
         String passwordConf = passwordConfText.getText().toString().trim();
 
-        if (TextUtils.isEmpty(user)){
+        //Error check user input here
+        if (TextUtils.isEmpty(username)) {
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
             return; //Return to stop registration
         }
-        if (TextUtils.isEmpty(password)){
+        if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!password.equals(passwordConf)){
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -74,17 +82,33 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog.setMessage("Registering User");
         progressDialog.show();
 
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Toast.makeText(SignupActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(SignupActivity.this, "Unsuccessful registration. Please try again.", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
+
+        //Add username to user
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
+
+        user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+
+                }
+            }
+        });
+
+        //Add other properties to database
     }
 
     public void cancel(View view) {
