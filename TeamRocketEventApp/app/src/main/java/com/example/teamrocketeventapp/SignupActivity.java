@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +29,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordText;
     private EditText passwordConfText;
     private EditText addressText;
+    private FirebaseUser user;
 
     private ProgressDialog progressDialog;
 
@@ -57,7 +57,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     private void registerUser() {
         //Get info from fields
-        String username = userText.getText().toString().trim();
+        final String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
         String bday = bdayText.getText().toString().trim();
         String address = addressText.getText().toString().trim();
@@ -94,19 +94,35 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+        //sign in then update
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            user = mAuth.getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
+
+                            user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()){
+
+                                    }
+                                }
+                            });
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(SignupActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+
         //Add username to user
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
-
-        user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-
-                }
-            }
-        });
 
         //Add other properties to database
     }
