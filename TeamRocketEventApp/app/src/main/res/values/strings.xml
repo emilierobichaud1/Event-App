@@ -17,4 +17,8 @@
     <string name="event_location">Location:</string>
     <string name="event_time">Time:</string>
     <string name="event_host">Host:</string>
+    <string name="home">Home</string>
+    <string name="events">Events</string>
+    <string name="profile">Profile</string>
+    <string name="event_no_activities">Nobody has posted anything yet! Be the first to say something!</string>
 </resources>
