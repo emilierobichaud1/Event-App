@@ -16,10 +16,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     private Button signupButton;
     private Button cancelButton;
@@ -39,6 +42,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_signup);
 
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
 
         //Get parts of the layout
         signupButton = (Button) findViewById(R.id.signupButton);
@@ -57,10 +62,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     private void registerUser() {
         //Get info from fields
-        final String username = userText.getText().toString().trim();
+        String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
-        String bday = bdayText.getText().toString().trim();
-        String address = addressText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
         String passwordConf = passwordConfText.getText().toString().trim();
 
@@ -73,7 +76,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!password.equals(passwordConf)){
+        if (!password.equals(passwordConf)) {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -82,6 +85,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog.setMessage("Registering User");
         progressDialog.show();
 
+        //Create user in database
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -94,23 +98,15 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        //sign in then update
+        //Sign in then and save info to database
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             user = mAuth.getCurrentUser();
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
-
-                            user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-
-                                    }
-                                }
-                            });
+                            saveUserInfo(user.getUid());    //add properties to database
+                            updateView(null);
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(SignupActivity.this, "Authentication failed.",
@@ -120,11 +116,24 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         // ...
                     }
                 });
+    }
 
-        //Add username to user
 
+    //Adds user properties to database
+    private void saveUserInfo(String userId) {
+        String username = userText.getText().toString().trim();
+        String email = emailText.getText().toString().trim();
+        String bday = bdayText.getText().toString().trim();
+        String address = addressText.getText().toString().trim();
 
-        //Add other properties to database
+        //Create user object to pass into database call
+        UserProperties userProperties = new UserProperties(username, email, bday, address);
+
+        //add users/ to front of node name to keep database easily searchable
+        String node = "users/" + userId;
+
+        //Creates new node in database and saves data
+        myRef.child(node).setValue(userProperties);
     }
 
     public void cancel(View view) {
@@ -133,6 +142,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
+    }
+
+    //method id called upon sucessful registration
+    public void updateView (View view){
+        //go to event page after sucessful registration
+        //TODO change MainActivity to the userprofile page
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
