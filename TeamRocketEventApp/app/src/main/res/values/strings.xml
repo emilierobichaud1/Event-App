@@ -10,12 +10,12 @@
     <string name="enter_address">Address</string>
     <string name="enter_birthdate">Birthdate</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="event_date">Date:</string>
+    <string name="event_date">Date</string>
     <string name="event_name">Event Name</string>
     <string name="event_sign_up">Sign up for this event</string>
     <string name="event_attendees"># of Attendees:</string>
-    <string name="event_location">Location:</string>
-    <string name="event_time">Time:</string>
+    <string name="event_location">Location</string>
+    <string name="event_time">Time</string>
     <string name="event_host">Host:</string>
     <string name="home">Home</string>
     <string name="events">Events</string>
@@ -26,4 +26,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="no_events">No events found in the current area.</string>
+    <string name="map_description">Map</string>
+    <string name="submit">Submit</string>
+    <string name="location_placeholder">3359 Mississauga Road</string>
 </resources>
