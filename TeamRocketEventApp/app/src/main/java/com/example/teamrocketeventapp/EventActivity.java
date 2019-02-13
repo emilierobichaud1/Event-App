@@ -19,6 +19,7 @@ public class EventActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
+                // TODO: add navigation for other buttons (needs those pages implemented)
                 case R.id.navigation_events:
                     // Switch to event index when "Events" button is pressed
                     Intent intent = new Intent(this, EventIndexActivity.class);
