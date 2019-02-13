@@ -21,9 +21,8 @@ public class EventActivity extends AppCompatActivity {
             switch (menuItem.getItemId()) {
                 case R.id.navigation_events:
                     // Switch to event index when "Events" button is pressed
-                    Intent intent = new Intent(EventActivity.this,
-                            EventIndexActivity.class);
-                    EventActivity.this.startActivity(intent);
+                    Intent intent = new Intent(this, EventIndexActivity.class);
+                    startActivity(intent);
                     return true;
             }
             return false;
