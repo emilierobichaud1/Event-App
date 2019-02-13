@@ -12,4 +12,4 @@ We want to create a working prototype of the application and connect the UI and 
 Specifically we are looking to implement:
 - User logins
 - User registration
-- Event creation
+- Event creation (partially)
