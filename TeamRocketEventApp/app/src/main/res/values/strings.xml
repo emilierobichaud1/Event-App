@@ -21,4 +21,8 @@
     <string name="events">Events</string>
     <string name="profile">Profile</string>
     <string name="event_no_activities">Nobody has posted anything yet! Be the first to say something!</string>
+    <string name="title_activity_event_index">EventIndexActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
