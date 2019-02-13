@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "668094922675",
+    "firebase_url": "https://teamrocket-8e87c.firebaseio.com",
+    "project_id": "teamrocket-8e87c",
+    "storage_bucket": "teamrocket-8e87c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668094922675:android:dd051013ed18ba45",
+        "android_client_info": {
+          "package_name": "com.example.teamrocketeventapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "668094922675-uot37l6kcrv080nsb76s07s5m3kcsov9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.teamrocketeventapp",
+            "certificate_hash": "be0361f010614e9d3ed060b37d2c7e06fcaaac51"
+          }
+        },
+        {
+          "client_id": "668094922675-0es0973hb80j43pl5hjgjpht10ip7i87.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAeGihrHOmzVRa4DKtqaXLw2yBKgOgW2U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "668094922675-0es0973hb80j43pl5hjgjpht10ip7i87.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
