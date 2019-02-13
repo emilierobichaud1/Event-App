@@ -53,11 +53,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:background="@drawable/toronto_map_gta_thumbnail"
         android:contentDescription="@string/map_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBar"
-        android:src="@drawable/toronto-map-gta-thumbnail" />
+        app:layout_constraintTop_toBottomOf="@+id/searchBar" />
 
     <ScrollView
         android:id="@+id/eventListView"
