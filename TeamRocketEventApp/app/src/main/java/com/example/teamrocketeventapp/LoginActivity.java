@@ -16,6 +16,11 @@ import android.util.Log;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,6 +28,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth Auth;
     private EditText passwordText;
     private EditText emailText;
+    public static final String EXTRA_MESSAGE = "com.example.teamrocketeventapp.MESSAGE";
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +71,17 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+
+
                             FirebaseUser user = Auth.getCurrentUser();
+
+                            String node = "users/" + user.getUid();
+
                             Log.w(TAG, "createUserWithEmail:success");
                             Toast.makeText(LoginActivity.this, "Login Success.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+
+                            updateUI(null, user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -78,11 +93,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //method id called upon sucessful login
-    public void updateUI (View view){
+    public void updateUI (View view, FirebaseUser user){
         //go to event page after sucessful login
         //TODO change MainActivity to the userprofile page
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, UserProfileActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, user.getUid());
         startActivity(intent);
     }
+
+
 
 }
