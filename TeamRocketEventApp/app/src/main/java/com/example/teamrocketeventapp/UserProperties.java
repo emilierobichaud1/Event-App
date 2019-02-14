@@ -21,4 +21,12 @@ public class UserProperties {
         this.bday = bday;
         this.address = address;
     }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getAddress (){
+        return this.address;
+    }
 }

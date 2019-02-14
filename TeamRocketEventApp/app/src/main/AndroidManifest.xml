@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EventCreateActivity"></activity>
-        <activity
-            android:name=".EventIndexActivity" />
+        <activity android:name=".UserProfileActivity"></activity>
+        <activity android:name=".EventCreateActivity" />
+        <activity android:name=".EventIndexActivity" />
         <activity android:name=".EventActivity" />
         <activity android:name=".SignupActivity" />
         <activity android:name=".LoginActivity" />
