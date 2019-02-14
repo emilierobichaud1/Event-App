@@ -37,16 +37,17 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void updateUserInfo(UserProperties currentUser){
+        //Update user information on UI after retrieving data from database
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
-        usernameTextView.setText(currentUser.getUsername());
-        addressTextView.setText(currentUser.getAddress());
+        usernameTextView.setText("Username: " + currentUser.getUsername());
+        addressTextView.setText("Address: " + currentUser.getAddress());
     }
 
     ValueEventListener valueListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            // Get Post object and use the values to update the UI
+            // Get user from database and use the values to update the UI
             UserProperties value = dataSnapshot.getValue(UserProperties.class);
             updateUserInfo(value);
         }
