@@ -1,5 +1,6 @@
 package com.example.teamrocketeventapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.UUID;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -33,8 +36,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
         //Get parts of the layout
         submitButton = (Button) findViewById(R.id.submitButton);
-        eventNameText = (EditText) findViewById(R.id.eventNameEditText;
-        dateText = (EditText) findViewById(R.id.dateEditText;
+        eventNameText = (EditText) findViewById(R.id.eventNameEditText);
+        dateText = (EditText) findViewById(R.id.dateEditText);
         timeText = (EditText) findViewById(R.id.timeEditText);
         locationText = (EditText) findViewById(R.id.locationEditText);
 
@@ -66,6 +69,19 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
             return;
         }
 
+        String id = UUID.randomUUID().toString();
+
+        EventProperties eventProperties = new EventProperties(eventName,date,time,location, id);
+
+        String node = "events/" + id;
+
+        myRef.child(node).setValue(eventProperties);
+
+
+        Toast.makeText(EventCreateActivity.this, "Event successfully created", Toast.LENGTH_SHORT).show();
+
+        updateView(null);
+
     }
 
     @Override
@@ -73,5 +89,11 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         if (view == submitButton) {
             createEvent();
         }
+    }
+
+    //method id called upon sucessful event creation
+    public void updateView (View view){
+        Intent intent = new Intent(this, EventActivity.class);
+        startActivity(intent);
     }
 }

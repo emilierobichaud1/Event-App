@@ -6,27 +6,40 @@
 package com.example.teamrocketeventapp;
 
 public class EventProperties {
-    public String username;
-    public String email;
-    public String bday;
-    public String address;
+    public String name;
+    public String date;
+    public String time;
+    public String location;
+    public String id;
 
-    public EventProperties(){
+    public EventProperties() {
 
     }
 
-    public EventProperties(String username, String email, String bday, String address) {
-        this.username = username;
-        this.email = email;
-        this.bday = bday;
-        this.address = address;
+    public EventProperties(String name, String date, String time, String location, String id) {
+        this.name = name;
+        this.date = date;
+        this.time = time;
+        this.location = location;
+        this.id = id;
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getName() {
+        return name;
     }
 
-    public String getAddress (){
-        return this.address;
+    public String getDate() {
+        return date;
     }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
 }
+
+

@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@+id/eventNameEditText" />
 
     <EditText
-        android:id="@+id/timeTextEdit"
+        android:id="@+id/timeEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/dateEditText" />
 
     <EditText
-        android:id="@+id/locationTextEdit"
+        android:id="@+id/locationEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -85,6 +85,6 @@
         android:inputType="textPostalAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeTextEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/timeEditText" />
 
 </android.support.constraint.ConstraintLayout>
