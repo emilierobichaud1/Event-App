@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
     public void updateUI (View view, FirebaseUser user){
         //go to event page after sucessful login
         //TODO change MainActivity to the userprofile page
-        Intent intent = new Intent(this, UserProfileActivity.class);
+        Intent intent = new Intent(this, EventIndexActivity.class); //temporary change for search testing
         intent.putExtra(EXTRA_MESSAGE, user.getUid());
         startActivity(intent);
     }

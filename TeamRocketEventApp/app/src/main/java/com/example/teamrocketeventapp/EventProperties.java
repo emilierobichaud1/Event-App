@@ -53,6 +53,10 @@ public class EventProperties {
         attendees.add(userId);
     }
 
+    public String toString() {
+        return name;
+    }
+
 }
 
 
