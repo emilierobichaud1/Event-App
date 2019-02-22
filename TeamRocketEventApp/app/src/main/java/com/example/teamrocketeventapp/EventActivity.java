@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -28,6 +29,14 @@ public class EventActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+
+    private void loadData(EventProperties event){
+
+        //sets name textbox
+        TextView usernameTextView = findViewById(R.id.eventName);
+        usernameTextView.setText(event.name);
     }
 
 }
