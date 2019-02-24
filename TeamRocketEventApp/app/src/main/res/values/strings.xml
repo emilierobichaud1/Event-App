@@ -29,4 +29,5 @@
     <string name="map_description">Map</string>
     <string name="submit">Submit</string>
     <string name="location_placeholder">3359 Mississauga Road</string>
+    <string name="title_activity_event_map">Map</string>
 </resources>
