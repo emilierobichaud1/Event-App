@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/mapButton" />
 
 
     <SearchView
@@ -70,8 +70,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add_white_24dp" />
 
-    <ImageView
-        android:id="@+id/mapImageView"
+    <Button
+        android:id="@+id/mapButton"
         android:layout_width="0dp"
         android:layout_height="218dp"
         android:layout_marginStart="16dp"
@@ -81,6 +81,7 @@
         android:layout_marginRight="16dp"
         android:background="@drawable/toronto_map_gta_thumbnail"
         android:contentDescription="@string/map_description"
+        android:onClick="openMap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBar" />
