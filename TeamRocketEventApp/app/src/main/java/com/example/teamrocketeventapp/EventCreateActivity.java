@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import java.util.UUID;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -18,6 +20,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
     private Button submitButton;
     private EditText eventNameText;
@@ -26,8 +30,11 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText locationText;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_create);
 
@@ -74,6 +81,10 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         EventProperties eventProperties = new EventProperties(eventName,date,time,location, id);
 
         String node = "events/" + id;
+
+        user = mAuth.getCurrentUser();
+
+        eventProperties.addAttendee(user.getUid()); //adds host to first index of attendees list
 
         myRef.child(node).setValue(eventProperties);
 

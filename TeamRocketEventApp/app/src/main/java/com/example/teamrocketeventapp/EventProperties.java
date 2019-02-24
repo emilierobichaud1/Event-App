@@ -6,6 +6,7 @@
 package com.example.teamrocketeventapp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EventProperties {
     public String name;
@@ -13,7 +14,7 @@ public class EventProperties {
     public String time;
     public String location;
     public String id;
-    public ArrayList<String> attendees;
+    public List<String> attendees;
 
     public EventProperties() {
 
