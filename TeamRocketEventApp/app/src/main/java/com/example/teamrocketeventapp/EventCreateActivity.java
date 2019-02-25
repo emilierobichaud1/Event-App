@@ -5,10 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class EventCreateActivity extends AppCompatActivity implements View.OnClickListener {
+public class EventCreateActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
@@ -28,7 +33,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText dateText;
     private EditText timeText;
     private EditText locationText;
-
+    private Spinner categorySpinner;
 
 
     @Override
@@ -47,16 +52,23 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         dateText = (EditText) findViewById(R.id.dateEditText);
         timeText = (EditText) findViewById(R.id.timeEditText);
         locationText = (EditText) findViewById(R.id.locationEditText);
+        categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
+
+        categorySpinner.setOnItemSelectedListener(this);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getCategoriesList());
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(dataAdapter);
 
         submitButton.setOnClickListener(this);
     }
 
-    private void createEvent(){
+    private void createEvent() {
         //Get info from fields
         String eventName = eventNameText.getText().toString().trim();
         String date = dateText.getText().toString().trim();
         String time = timeText.getText().toString().trim();
         String location = locationText.getText().toString().trim();
+        String category = categorySpinner.getSelectedItem().toString();
 
         //Error check user input here
         if (TextUtils.isEmpty(eventName)) {
@@ -75,10 +87,14 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(this, "Please enter location", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (category.equals("Category")) {
+            Toast.makeText(this, "Please select category", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String id = UUID.randomUUID().toString();
 
-        EventProperties eventProperties = new EventProperties(eventName,date,time,location, id);
+        EventProperties eventProperties = new EventProperties(eventName, date, time, location, category, id);
 
         String node = "events/" + id;
 
@@ -95,6 +111,27 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    //Create an array of all categories
+    private List<String> getCategoriesList() {
+        List<String> categoriesList = Arrays.asList("Category",
+                "Art",
+                "Career",
+                "Causes",
+                "Educational",
+                "Film",
+                "Fitness",
+                "Food",
+                "Games",
+                "Literature",
+                "Music",
+                "Religion",
+                "Social",
+                "Tech",
+                "Other");
+        return categoriesList;
+
+    }
+
     @Override
     public void onClick(View view) {
         if (view == submitButton) {
@@ -103,8 +140,18 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     }
 
     //method id called upon sucessful event creation
-    public void updateView (View view){
+    public void updateView(View view) {
         Intent intent = new Intent(this, EventActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+        String item = adapterView.getItemAtPosition(pos).toString();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

@@ -13,6 +13,7 @@ public class EventProperties {
     public String date;
     public String time;
     public String location;
+    public String category;
     public String id;
     public List<String> attendees;
 
@@ -20,11 +21,12 @@ public class EventProperties {
 
     }
 
-    public EventProperties(String name, String date, String time, String location, String id) {
+    public EventProperties(String name, String date, String time, String location, String category, String id) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.location = location;
+        this.category=category;
         this.id = id;
         this.attendees = new ArrayList<>();
     }
