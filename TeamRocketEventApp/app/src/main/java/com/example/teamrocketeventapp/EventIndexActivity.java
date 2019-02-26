@@ -13,6 +13,12 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,8 +28,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class EventIndexActivity extends AppCompatActivity {
+public class EventIndexActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private GoogleMap mMap;
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
@@ -138,7 +145,8 @@ public class EventIndexActivity extends AppCompatActivity {
         searchView = findViewById(R.id.searchBar);
         searchView.setOnQueryTextListener(searchListener);
 
-
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     public void create(View view) {
@@ -167,7 +175,7 @@ public class EventIndexActivity extends AppCompatActivity {
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
     private void setSearchView(){
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
-        findViewById(R.id.mapButton).setVisibility(View.GONE);
+        findViewById(R.id.map).setVisibility(View.GONE);
         findViewById(R.id.eventListView).setVisibility(View.GONE);
         findViewById(R.id.navigation).setVisibility(View.GONE);
     }
@@ -175,14 +183,17 @@ public class EventIndexActivity extends AppCompatActivity {
     // resets stuff done by setSearchView
     private void resetSearchView(){
         findViewById(R.id.eventListView).setVisibility(View.GONE);
-        findViewById(R.id.mapButton).setVisibility(View.VISIBLE);
+        findViewById(R.id.map).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.navigation).setVisibility(View.VISIBLE);
     }
 
-    public void openMap(View view) {
-        Intent intent = new Intent(this, EventMapActivity.class);
-        startActivity(intent);
-    }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng toronto = new LatLng(43.6532, -79.3832);
+
+        googleMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(toronto));
+    }
 }
