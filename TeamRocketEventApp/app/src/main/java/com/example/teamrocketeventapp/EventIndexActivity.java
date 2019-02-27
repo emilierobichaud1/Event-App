@@ -18,7 +18,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,10 +29,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EventIndexActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
@@ -39,6 +43,14 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     DatabaseReference eventsRef;
     private FirebaseDatabase database;
     ValueEventListener valueEventListener = new ValueEventListener() {
+
+        private boolean inArea(EventProperties event) {
+            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+            List<Double> coordinateList = event.getCoordinates();
+            LatLng coordinates = new LatLng(coordinateList.get(0), coordinateList.get(1));
+            return bounds.contains(coordinates);
+        }
+
         @Override
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -47,8 +59,10 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                 adapter.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     EventProperties event = snapshot.getValue(EventProperties.class);
-                    searchNames.add(event.name);
-                    adapter.add(event);
+                    if (event != null && inArea(event)) {
+                        searchNames.add(event.name);
+                        adapter.add(event);
+                    }
                 }
             }
         }
@@ -191,9 +205,10 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
         LatLng toronto = new LatLng(43.6532, -79.3832);
 
-        googleMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(toronto));
+        mMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(toronto));
     }
 }
