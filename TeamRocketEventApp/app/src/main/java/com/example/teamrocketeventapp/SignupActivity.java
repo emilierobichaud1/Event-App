@@ -1,5 +1,6 @@
 package com.example.teamrocketeventapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,6 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
@@ -35,6 +41,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseUser user;
 
     private ProgressDialog progressDialog;
+    private DatePickerDialog dpd;
+    private Calendar c;
+    private String BirthDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,27 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog = new ProgressDialog(this);
 
         signupButton.setOnClickListener(this);
+
+        bdayText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                c = Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int month = c.get(Calendar.MONTH);
+                int year = c.get(Calendar.YEAR);
+
+                dpd = new DatePickerDialog(SignupActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
+
+                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        bdayText.setText(BirthDate);
+
+                    }
+                }, day, month, year);
+                dpd.show();
+            }
+            });
     }
 
     private void registerUser() {
@@ -66,6 +96,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String email = emailText.getText().toString().trim();
         String password = passwordText.getText().toString().trim();
         String passwordConf = passwordConfText.getText().toString().trim();
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher (username);
+        Matcher m2 = p.matcher(password);
+        boolean b = m.find();
+        boolean b2 = m2.find();
 
         //Error check user input here
         if (TextUtils.isEmpty(username)) {
@@ -78,6 +113,19 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
         if (!password.equals(passwordConf)) {
             Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (password.length() < 6) {
+            Toast.makeText(this, "Passwords needs to be 6 characters or more", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (b) {
+            Toast.makeText(this, "Username has special characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (b2) {
+            Toast.makeText(this, "Password has special characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -123,7 +171,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private void saveUserInfo(String userId) {
         String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
-        String bday = bdayText.getText().toString().trim();
+        String bday = BirthDate;
         String address = addressText.getText().toString().trim();
 
         //Create user object to pass into database call
