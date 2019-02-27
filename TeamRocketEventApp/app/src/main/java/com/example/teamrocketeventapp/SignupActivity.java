@@ -4,13 +4,16 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +24,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.net.Uri;
+
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +35,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
-    private Button signupButton;
+
+    private static int PICK_IMAGE = 1;
+    private ImageView profilePicture;
+    private FloatingActionButton buttonLoadPicture;
+    private Button signUpButton;
     private Button cancelButton;
     private EditText userText;
     private EditText emailText;
@@ -55,7 +64,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         myRef = database.getReference();
 
         //Get parts of the layout
-        signupButton = (Button) findViewById(R.id.signupButton);
+        profilePicture = (ImageView) findViewById (R.id.profilePicture);
+        buttonLoadPicture = (FloatingActionButton) findViewById (R.id.buttonLoadPicture);
+        signUpButton = (Button) findViewById(R.id.signUpButton);
         cancelButton = (Button) findViewById(R.id.cancelButton);
         userText = (EditText) findViewById(R.id.usernameEditText);
         emailText = (EditText) findViewById(R.id.emailEditText);
@@ -66,7 +77,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         progressDialog = new ProgressDialog(this);
 
-        signupButton.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
+        buttonLoadPicture.setOnClickListener(this);
 
         bdayText.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -200,13 +212,32 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         startActivity(intent);
     }
 
+    public void pickImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE);
+    }
     @Override
     public void onClick(View view) {
-        if (view == signupButton) {
+        if (view == signUpButton) {
             registerUser();
         }
         if (view == cancelButton) {
 
+        }
+        if(view == buttonLoadPicture) {
+            pickImage();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode==PICK_IMAGE && resultCode==RESULT_OK) {
+            Uri imageUri = data.getData();
+            profilePicture.setImageURI(imageUri);
         }
     }
 }
