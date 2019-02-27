@@ -2,8 +2,11 @@ package com.example.teamrocketeventapp;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +22,35 @@ public class UserProfileActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        UserProperties currentUser = new UserProperties();
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_profile);
 
         Intent intent = getIntent();
-        String userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
+        String userId = intent.getStringExtra(EventIndexActivity.EXTRA_MESSAGE);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.navigation_home:
+                        //mTextMessage.setText(R.string.profile);
+                        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case R.id.navigation_events:
+                        break;
+
+                }
+
+
+                return false;
+            }
+        });
+
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -35,6 +60,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
     }
+
+
 
     public void updateUserInfo(UserProperties currentUser){
         //Update user information on UI after retrieving data from database
