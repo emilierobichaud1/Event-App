@@ -24,6 +24,7 @@ public class EventActivity extends AppCompatActivity {
 
     EventProperties event;
     private String eventId;
+    private String hostName;
 
     //needed to pull data from the database
     ValueEventListener valueEventListener = new ValueEventListener() {
@@ -33,8 +34,7 @@ public class EventActivity extends AppCompatActivity {
             if(dataSnapshot.exists()){
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     event = snapshot.getValue(EventProperties.class);
-                    Log.d("AAAAAZZZ", event.getName());
-                    loadData();
+                    getHostName();
                 }
             }
         }
@@ -44,11 +44,6 @@ public class EventActivity extends AppCompatActivity {
 
         }
     };
-
-
-
-
-
 
 
     @Override
@@ -81,10 +76,43 @@ public class EventActivity extends AppCompatActivity {
     }
 
 
+    private void getHostName(){
+        Query query2 = FirebaseDatabase.getInstance().getReference("users");
+        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        if(event.attendees.get(0).toString().equals(snapshot.getRef().getKey())) {
+                            UserProperties usr = snapshot.getValue(UserProperties.class);
+                            hostName = usr.getUsername();
+                            loadData();
+                        }
+
+                    }
+                }
+            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
     private void loadData(){
-        //sets name textbox
-        TextView usernameTextView = findViewById(R.id.eventName);
-        usernameTextView.setText(event.name);
+        //sets textboxex
+        TextView nameTextView = findViewById(R.id.eventName);
+        TextView dateTextView = findViewById(R.id.date);
+        TextView numAttendeesTextView = findViewById(R.id.attendeeCount);
+        TextView timeTextView = findViewById(R.id.time);
+        TextView locationTextView = findViewById(R.id.location);
+        TextView hostTextView = findViewById(R.id.host);
+
+        nameTextView.setText(event.name);
+        dateTextView.setText(event.date);
+        numAttendeesTextView.setText("# of Attendees: " + event.attendees.size());
+        timeTextView.setText("Time: " + event.time);
+        locationTextView.setText("Location: " + event.location);
+        hostTextView.setText("Host: " + hostName);
+
+
     }
 
 }
