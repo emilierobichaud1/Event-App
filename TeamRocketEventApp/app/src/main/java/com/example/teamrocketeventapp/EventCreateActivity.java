@@ -1,6 +1,9 @@
 package com.example.teamrocketeventapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -94,7 +99,15 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
         String id = UUID.randomUUID().toString();
 
-        EventProperties eventProperties = new EventProperties(eventName, date, time, location, category, id);
+        List<Double> coordinates = new ArrayList<>();
+
+        try {
+            coordinates = addressToCoordinates(location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        EventProperties eventProperties = new EventProperties(eventName, date, time, location, coordinates, category, id);
 
         String node = "events/" + id;
 
@@ -130,6 +143,23 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
                 "Other");
         return categoriesList;
 
+    }
+
+
+    //Converts address to coordinates for easier plotting on map
+    public List<Double> addressToCoordinates(String address) throws IOException {
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> addresses = geocoder.getFromLocationName(address, 1);
+        double latitude = 0, longitude = 0;
+
+        if (addresses.size() > 0) {
+            latitude = addresses.get(0).getLatitude();
+            longitude = addresses.get(0).getLongitude();
+        }
+        List<Double> coordinates = new ArrayList<>();
+        coordinates.add(latitude);
+        coordinates.add(longitude);
+        return coordinates;
     }
 
     @Override

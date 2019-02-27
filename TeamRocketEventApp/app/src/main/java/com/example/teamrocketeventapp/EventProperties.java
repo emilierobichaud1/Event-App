@@ -16,17 +16,19 @@ public class EventProperties {
     public String category;
     public String id;
     public List<String> attendees;
+    public List<Double> coordinates;
 
     public EventProperties() {
 
     }
 
-    public EventProperties(String name, String date, String time, String location, String category, String id) {
+    public EventProperties(String name, String date, String time, String location, List<Double> coordinates, String category, String id) {
         this.name = name;
         this.date = date;
         this.time = time;
         this.location = location;
-        this.category=category;
+        this.category = category;
+        this.coordinates = coordinates;
         this.id = id;
         this.attendees = new ArrayList<>();
     }
@@ -51,7 +53,7 @@ public class EventProperties {
         return id;
     }
 
-    public void addAttendee(String userId){
+    public void addAttendee(String userId) {
         //need to change to add to firebase
         attendees.add(userId);
     }
@@ -60,6 +62,14 @@ public class EventProperties {
         return name;
     }
 
+
+    public String getCategory() {
+        return category;
+    }
+
+    public List<Double> getCoordinates() {
+        return coordinates;
+    }
 }
 
 
