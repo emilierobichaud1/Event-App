@@ -52,7 +52,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         dateText = (EditText) findViewById(R.id.dateEditText);
         timeText = (EditText) findViewById(R.id.timeEditText);
         locationText = (EditText) findViewById(R.id.locationEditText);
-        categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
+        //categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
 
         categorySpinner.setOnItemSelectedListener(this);
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getCategoriesList());

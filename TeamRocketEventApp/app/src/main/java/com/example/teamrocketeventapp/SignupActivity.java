@@ -1,5 +1,6 @@
 package com.example.teamrocketeventapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
@@ -35,6 +39,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private FirebaseUser user;
 
     private ProgressDialog progressDialog;
+    private DatePickerDialog dpd;
+    private Calendar c;
+    private String BirthDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +65,27 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         progressDialog = new ProgressDialog(this);
 
         signupButton.setOnClickListener(this);
+
+        bdayText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                c = Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int month = c.get(Calendar.MONTH);
+                int year = c.get(Calendar.YEAR);
+
+                dpd = new DatePickerDialog(SignupActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
+
+                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        bdayText.setText(BirthDate);
+
+                    }
+                }, day, month, year);
+                dpd.show();
+            }
+            });
     }
 
     private void registerUser() {
@@ -123,7 +151,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private void saveUserInfo(String userId) {
         String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
-        String bday = bdayText.getText().toString().trim();
+        String bday = BirthDate;
         String address = addressText.getText().toString().trim();
 
         //Create user object to pass into database call
