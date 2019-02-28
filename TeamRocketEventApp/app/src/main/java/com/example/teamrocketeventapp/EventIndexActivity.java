@@ -3,11 +3,8 @@ package com.example.teamrocketeventapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,9 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,27 +31,40 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventIndexActivity extends AppCompatActivity {
+public class EventIndexActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private GoogleMap mMap;
+
     private String userId;
     public static final String EXTRA_MESSAGE = "";
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
     private ArrayAdapter adapter;
-    private ArrayList<String> searchNames = new ArrayList<String>();
+    private ArrayList<String> searchNames = new ArrayList<>();
     DatabaseReference eventsRef;
     private FirebaseDatabase database;
     ValueEventListener valueEventListener = new ValueEventListener() {
+
+        private boolean inArea(EventProperties event) {
+            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+            List<Double> coordinateList = event.getCoordinates();
+            LatLng coordinates = new LatLng(coordinateList.get(0), coordinateList.get(1));
+            return bounds.contains(coordinates);
+        }
+
         @Override
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if(dataSnapshot.exists()){
-                searchNames = new ArrayList<String>();
+                searchNames = new ArrayList<>();
                 adapter.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     EventProperties event = snapshot.getValue(EventProperties.class);
-                    searchNames.add(event.name);
-                    adapter.add(event);
+                    if (event != null && inArea(event)) {
+                        searchNames.add(event.name);
+                        adapter.add(event);
+                    }
                 }
             }
         }
@@ -148,10 +164,11 @@ public class EventIndexActivity extends AppCompatActivity {
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
 
-        searchView = (SearchView) findViewById(R.id.searchBar);
+        searchView = findViewById(R.id.searchBar);
         searchView.setOnQueryTextListener(searchListener);
 
-
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     public void create(View view) {
@@ -180,24 +197,29 @@ public class EventIndexActivity extends AppCompatActivity {
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
     private void setSearchView(){
         findViewById(R.id.searchList).setVisibility(View.VISIBLE);
-        findViewById(R.id.mapImageView).setVisibility(View.GONE);
+        findViewById(R.id.map).setVisibility(View.GONE);
         findViewById(R.id.eventListView).setVisibility(View.GONE);
         findViewById(R.id.navigation).setVisibility(View.GONE);
     }
 
-    //restes stuff doen by setSearchView
+    // resets stuff done by setSearchView
     private void resetSearchView(){
         findViewById(R.id.searchList).setVisibility(View.GONE);
-        findViewById(R.id.mapImageView).setVisibility(View.VISIBLE);
+        findViewById(R.id.map).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.navigation).setVisibility(View.VISIBLE);
     }
 
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
 
+        // Refresh event list when map moves
+        mMap.setOnCameraIdleListener(() -> loadFromDb(null, null));
+        LatLng toronto = new LatLng(43.6532, -79.3832);
 
-
-
-
-
+        mMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(toronto));
+    }
 }
