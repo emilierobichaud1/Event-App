@@ -1,5 +1,6 @@
 package com.example.teamrocketeventapp;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,6 +42,9 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText timeText;
     private EditText locationText;
     private Spinner categorySpinner;
+    private DatePickerDialog dpd;
+    private Calendar c;
+    private String BirthDate;
 
 
     @Override
@@ -65,6 +71,27 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         categorySpinner.setAdapter(dataAdapter);
 
         submitButton.setOnClickListener(this);
+
+        dateText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                c = Calendar.getInstance();
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int month = c.get(Calendar.MONTH);
+                int year = c.get(Calendar.YEAR);
+
+                dpd = new DatePickerDialog(EventCreateActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
+
+                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        dateText.setText(BirthDate);
+
+                    }
+                }, day, month, year);
+                dpd.show();
+            }
+        });
     }
 
     private void createEvent() {
