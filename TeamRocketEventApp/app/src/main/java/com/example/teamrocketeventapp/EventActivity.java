@@ -63,10 +63,15 @@ public class EventActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 // TODO: add navigation for other buttons (needs those pages implemented)
-                case R.id.navigation_events:
+                case R.id.navigation_home:
                     // Switch to event index when "Events" button is pressed
                     Intent intent = new Intent(this, EventIndexActivity.class);
                     startActivity(intent);
+                    return true;
+                case R.id.navigation_profile:
+                    // Switch to event index when "Events" button is pressed
+                    Intent intent2 = new Intent(this, UserProfileActivity.class);
+                    startActivity(intent2);
                     return true;
             }
             return false;
