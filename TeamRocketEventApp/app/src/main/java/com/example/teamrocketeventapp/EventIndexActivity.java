@@ -143,7 +143,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
         //search by name stuff
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchNames);
-        listView = (ListView) findViewById(R.id.eventListView);
+        listView = (ListView) findViewById(R.id.searchList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
@@ -179,7 +179,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
     private void setSearchView(){
-        findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
+        findViewById(R.id.searchList).setVisibility(View.VISIBLE);
         findViewById(R.id.mapImageView).setVisibility(View.GONE);
         findViewById(R.id.eventListView).setVisibility(View.GONE);
         findViewById(R.id.navigation).setVisibility(View.GONE);
@@ -187,7 +187,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
     //restes stuff doen by setSearchView
     private void resetSearchView(){
-        findViewById(R.id.eventListView).setVisibility(View.GONE);
+        findViewById(R.id.searchList).setVisibility(View.GONE);
         findViewById(R.id.mapImageView).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.navigation).setVisibility(View.VISIBLE);
