@@ -15,3 +15,4 @@ We want to create working prototypes of events and user profiles.
 - Fix sign up bug
 - Serch for events
 - User profile image
+- navigate between pages
