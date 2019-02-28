@@ -206,6 +206,9 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        // Refresh event list when map moves
+        mMap.setOnCameraIdleListener(() -> loadFromDb(null, null));
         LatLng toronto = new LatLng(43.6532, -79.3832);
 
         mMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
