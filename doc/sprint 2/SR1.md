@@ -1,4 +1,4 @@
-##Participants:
+## Participants:
 
 - Aldrin Ramiro (ramiroal)
 - Francis Dinh (dinhfran)
