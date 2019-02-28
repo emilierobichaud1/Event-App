@@ -49,6 +49,8 @@
         android:ems="10"
         android:hint="@string/event_date"
         android:importantForAutofill="no"
+        android:clickable="true"
+        android:focusable="false"
         android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

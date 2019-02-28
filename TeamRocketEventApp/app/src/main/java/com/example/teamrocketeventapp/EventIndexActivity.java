@@ -35,6 +35,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
     private GoogleMap mMap;
 
+    private String userId;
+    public static final String EXTRA_MESSAGE = "";
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
@@ -119,25 +121,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     };
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.home);
-                    return true;
-                case R.id.navigation_events:
-                    mTextMessage.setText(R.string.events);
-                    return true;
-                case R.id.navigation_profile:
-                    mTextMessage.setText(R.string.profile);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,9 +129,33 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         setContentView(R.layout.activity_event_index);
 
         mTextMessage = findViewById(R.id.message);
+        BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+                = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_events:
+
+                        return true;
+                    case R.id.navigation_profile:
+                        //mTextMessage.setText(R.string.profile);
+                        Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
+                        intent2.putExtra(EXTRA_MESSAGE, userId);
+                        startActivity(intent2);
+                        return true;
+                }
+                return false;
+            }
+        };
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
         loadFromDb(null, null);
+
+        Intent intent = getIntent();
+        userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         //search by name stuff
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchNames);
