@@ -59,10 +59,17 @@
             android:text="@string/enter_username" />
 
         <TextView
+            android:id="@+id/display_number_of_events"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:text="@string/number_of_events" />
+
+        <TextView
             android:id="@+id/display_address"
             android:layout_width="match_parent"
             android:layout_height="33dp"
             android:text="@string/enter_address" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
