@@ -187,7 +187,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String address = addressText.getText().toString().trim();
 
         //Create user object to pass into database call
-        UserProperties userProperties = new UserProperties(username, email, bday, address);
+        UserProperties userProperties = new UserProperties(username, email, bday, address, userId);
+        userProperties.addEvent("first");
 
         //add users/ to front of node name to keep database easily searchable
         String node = "users/" + userId;

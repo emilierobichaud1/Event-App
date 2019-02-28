@@ -10,7 +10,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +26,10 @@ import java.util.ArrayList;
 public class EventActivity extends AppCompatActivity {
 
     EventProperties event;
+    UserProperties currentUser;
     private String eventId;
     private String hostName;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     //needed to pull data from the database
     ValueEventListener valueEventListener = new ValueEventListener() {
@@ -44,6 +49,8 @@ public class EventActivity extends AppCompatActivity {
 
         }
     };
+
+
 
 
     @Override
@@ -72,7 +79,45 @@ public class EventActivity extends AppCompatActivity {
             DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference("events");
             Query query = FirebaseDatabase.getInstance().getReference("events").orderByChild("id").equalTo(eventId);
             query.addListenerForSingleValueEvent(valueEventListener);
+
+
+
         }
+    }
+
+    public void addAttendee(View view) {
+
+
+        ValueEventListener valueEventListener2 = new ValueEventListener() {
+            @Override
+            //method that activates upon query
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        // Get user from database and use the values to update the UI
+                        currentUser = snapshot.getValue(UserProperties.class);
+                        currentUser.addEvent(event.getId());
+                        changeUser(currentUser);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        //get the UserProperties object
+        Query usersQuery = FirebaseDatabase.getInstance().getReference("users").orderByChild("id").equalTo(user.getUid());
+        usersQuery.addListenerForSingleValueEvent(valueEventListener2);
+
+        event.addAttendee(user.getUid());
+
+
+        FirebaseDatabase.getInstance().getReference("events").child(eventId).setValue(event);
+
+
     }
 
 
@@ -95,7 +140,12 @@ public class EventActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
-
+    private void changeUser(UserProperties user){
+        FirebaseDatabase.getInstance().getReference("users").child(user.getId()).setValue(user);
+    }
+    private void changeEvent(EventProperties event){
+        FirebaseDatabase.getInstance().getReference("events").child(event.getId()).setValue(event);
+    }
     private void loadData(){
         //sets textboxex
         TextView nameTextView = findViewById(R.id.eventName);
