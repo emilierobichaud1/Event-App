@@ -42,15 +42,15 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private ListView listView;
     private ArrayAdapter adapter;
     private ArrayList<String> searchNames = new ArrayList<>();
+
     DatabaseReference eventsRef;
     private FirebaseDatabase database;
     ValueEventListener valueEventListener = new ValueEventListener() {
 
-        private boolean inArea(EventProperties event) {
-            LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-            List<Double> coordinateList = event.getCoordinates();
-            LatLng coordinates = new LatLng(coordinateList.get(0), coordinateList.get(1));
-            return bounds.contains(coordinates);
+        private void addEventToMap(EventProperties event) {
+            List<Double> eventCoordinates = event.getCoordinates();
+            LatLng eventPosition = new LatLng(eventCoordinates.get(0), eventCoordinates.get(1));
+            mMap.addMarker(new MarkerOptions().position(eventPosition).title(event.getName()));
         }
 
         @Override
@@ -61,9 +61,10 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                 adapter.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     EventProperties event = snapshot.getValue(EventProperties.class);
-                    if (event != null && inArea(event)) {
+                    if (event != null) {
                         searchNames.add(event.name);
                         adapter.add(event);
+                        addEventToMap(event);
                     }
                 }
             }
@@ -109,19 +110,20 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
             }
         };
 
-    private ListView.OnItemClickListener searchResultsClickListener = new ListView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            EventProperties event = (EventProperties) parent.getItemAtPosition(position);
-            //event.getId()
-            Intent intent = new Intent(view.getContext(), EventActivity.class);
-            intent.putExtra("eventid", event.getId());
-            startActivity(intent);
-        }
+    private ListView.OnItemClickListener searchResultsClickListener = (parent, view, position, id) -> {
+        EventProperties event = (EventProperties) parent.getItemAtPosition(position);
+        //event.getId()
+        Intent intent = new Intent(view.getContext(), EventActivity.class);
+        intent.putExtra("eventid", event.getId());
+        startActivity(intent);
     };
 
-
-
+    private boolean inArea(EventProperties event) {
+        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+        List<Double> coordinateList = event.getCoordinates();
+        LatLng coordinates = new LatLng(coordinateList.get(0), coordinateList.get(1));
+        return bounds.contains(coordinates);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,24 +132,20 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
         mTextMessage = findViewById(R.id.message);
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-                = new BottomNavigationView.OnNavigationItemSelectedListener() {
+                = item -> {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_events:
 
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigation_events:
-
-                        return true;
-                    case R.id.navigation_profile:
-                        //mTextMessage.setText(R.string.profile);
-                        Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
-                        intent2.putExtra(EXTRA_MESSAGE, userId);
-                        startActivity(intent2);
-                        return true;
-                }
-                return false;
-            }
-        };
+                            return true;
+                        case R.id.navigation_profile:
+                            //mTextMessage.setText(R.string.profile);
+                            Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
+                            intent2.putExtra(EXTRA_MESSAGE, userId);
+                            startActivity(intent2);
+                            return true;
+                    }
+                    return false;
+                };
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -215,8 +213,6 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Refresh event list when map moves
-        mMap.setOnCameraIdleListener(() -> loadFromDb(null, null));
         LatLng toronto = new LatLng(43.6532, -79.3832);
 
         mMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
