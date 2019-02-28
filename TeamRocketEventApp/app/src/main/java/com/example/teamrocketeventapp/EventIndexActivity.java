@@ -134,8 +134,9 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = item -> {
                     switch (item.getItemId()) {
+                        case R.id.navigation_home:
+                            return true;
                         case R.id.navigation_events:
-
                             return true;
                         case R.id.navigation_profile:
                             //mTextMessage.setText(R.string.profile);
@@ -147,6 +148,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                     return false;
                 };
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().getItem(0).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 

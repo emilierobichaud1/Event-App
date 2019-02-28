@@ -41,6 +41,8 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.navigation_profile:
+                        return true;
                     case R.id.navigation_events:
                         return true;
                     case R.id.navigation_home:
@@ -53,6 +55,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().getItem(2).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         database = FirebaseDatabase.getInstance();
