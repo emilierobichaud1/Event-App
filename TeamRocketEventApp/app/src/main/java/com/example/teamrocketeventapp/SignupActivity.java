@@ -222,6 +222,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         if (view == signUpButton) {
             registerUser();
+            setContentView(R.layout.activity_signup_preferences);
         }
         if (view == cancelButton) {
 
