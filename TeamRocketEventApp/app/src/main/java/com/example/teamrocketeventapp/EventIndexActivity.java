@@ -120,12 +120,13 @@ public class EventIndexActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_events:
+
                         return true;
                     case R.id.navigation_profile:
                         //mTextMessage.setText(R.string.profile);
-                        Intent intent = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
-                        intent.putExtra(EXTRA_MESSAGE, userId);
-                        startActivity(intent);
+                        Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
+                        intent2.putExtra(EXTRA_MESSAGE, userId);
+                        startActivity(intent2);
                         return true;
                 }
                 return false;
@@ -142,7 +143,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
         //search by name stuff
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchNames);
-        listView = (ListView) findViewById(R.id.searchList);
+        listView = (ListView) findViewById(R.id.eventListView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
@@ -178,7 +179,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
     private void setSearchView(){
-        findViewById(R.id.searchList).setVisibility(View.VISIBLE);
+        findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.mapImageView).setVisibility(View.GONE);
         findViewById(R.id.eventListView).setVisibility(View.GONE);
         findViewById(R.id.navigation).setVisibility(View.GONE);
@@ -186,7 +187,7 @@ public class EventIndexActivity extends AppCompatActivity {
 
     //restes stuff doen by setSearchView
     private void resetSearchView(){
-        findViewById(R.id.searchList).setVisibility(View.GONE);
+        findViewById(R.id.eventListView).setVisibility(View.GONE);
         findViewById(R.id.mapImageView).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.navigation).setVisibility(View.VISIBLE);
