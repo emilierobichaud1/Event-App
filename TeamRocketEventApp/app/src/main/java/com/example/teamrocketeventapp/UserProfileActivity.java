@@ -69,8 +69,10 @@ public class UserProfileActivity extends AppCompatActivity {
         //Update user information on UI after retrieving data from database
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
+        TextView numEventTextView = findViewById(R.id.display_number_of_events);
         usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
+        numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size()-1));
     }
 
     ValueEventListener valueListener = new ValueEventListener() {
