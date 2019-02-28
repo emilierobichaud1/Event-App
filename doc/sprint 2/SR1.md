@@ -1,10 +1,10 @@
-Participants:
+##Participants:
 
-Aldrin Ramiro (ramiroal)
-Francis Dinh (dinhfran)
-Andrew juskiewicz (juskiewi)
-Ryan Liu (liuryan4)
-Emilie Robichaud (robich22)
+- Aldrin Ramiro (ramiroal)
+- Francis Dinh (dinhfran)
+- Andrew juskiewicz (juskiewi)
+- Ryan Liu (liuryan4)
+- Emilie Robichaud (robich22)
 
 	A practice our group feels we should keep is using Pivotal Tracker to keep track of each user story. This allows us to assign owners and add tasks to user stories more efficiently. Also, it is easier for members to see who is doing what if they need to communicate with them. We will also continue to work on each task on a separate branch and continue to have detailed commit messages. This allows us to keep the flow of the project consistent and allows other members to know what has been updated with each commit. Lastly, we will continue to communicate well with each other. Members were quick to respond to questions and were willing to explain their code to other members, which led to less confusion on code logic and syntax.
 
