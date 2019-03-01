@@ -1,6 +1,7 @@
 package com.example.teamrocketeventapp;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -43,8 +45,10 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText locationText;
     private Spinner categorySpinner;
     private DatePickerDialog dpd;
+    private TimePickerDialog tpd;
     private Calendar c;
     private String BirthDate;
+    private String time;
 
 
     @Override
@@ -71,6 +75,27 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         categorySpinner.setAdapter(dataAdapter);
 
         submitButton.setOnClickListener(this);
+
+        timeText.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                c = Calendar.getInstance();
+                int hour = c.get(Calendar.HOUR);
+                int minute = c.get(Calendar.MINUTE);
+                boolean is24Hour = true;
+
+                tpd = new TimePickerDialog(EventCreateActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int mHour, int mMinute) {
+
+                        time = mHour +";"+ mMinute;
+                        timeText.setText(time);
+
+                    }
+                }, hour, minute, is24Hour);
+                tpd.show();
+            }
+        });
 
         dateText.setOnClickListener(new View.OnClickListener(){
             @Override

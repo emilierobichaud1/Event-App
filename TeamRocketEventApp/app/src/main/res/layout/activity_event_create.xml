@@ -68,6 +68,8 @@
         android:ems="10"
         android:hint="@string/event_time"
         android:inputType="time"
+        android:clickable="true"
+        android:focusable="false"
         android:autofillHints="@string/location_placeholder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
