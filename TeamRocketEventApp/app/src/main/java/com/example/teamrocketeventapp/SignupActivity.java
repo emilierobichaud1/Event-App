@@ -30,7 +30,7 @@ import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
@@ -48,6 +48,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordConfText;
     private EditText addressText;
     private FirebaseUser user;
+    private Uri imageUri;
 
     private ProgressDialog progressDialog;
     private DatePickerDialog dpd;
@@ -77,8 +78,28 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         progressDialog = new ProgressDialog(this);
 
-        signUpButton.setOnClickListener(this);
-        buttonLoadPicture.setOnClickListener(this);
+
+        signUpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                registerUser();
+                setContentView(R.layout.activity_signup_preferences);
+
+            }});
+
+        buttonLoadPicture.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                pickImage();
+
+            }});
+
+        cancelButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.activity_main);
+
+            }});
 
         bdayText.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -218,19 +239,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE);
-    }
-    @Override
-    public void onClick(View view) {
-        if (view == signUpButton) {
-            registerUser();
-            setContentView(R.layout.activity_signup_preferences);
-        }
-        if (view == cancelButton) {
 
-        }
-        if(view == buttonLoadPicture) {
-            pickImage();
-        }
     }
 
     @Override
@@ -238,8 +247,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode==PICK_IMAGE && resultCode==RESULT_OK) {
-            Uri imageUri = data.getData();
+            imageUri = data.getData();
             profilePicture.setImageURI(imageUri);
+            user = mAuth.getCurrentUser();
+            //saveUserInfo(user.getPhotoUrl(),ImageUri);
         }
     }
 }
