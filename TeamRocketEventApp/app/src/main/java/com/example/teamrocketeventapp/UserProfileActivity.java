@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +23,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
 
     @Override
@@ -29,7 +33,7 @@ public class UserProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_profile);
 
         Intent intent = getIntent();
-        String userId = intent.getStringExtra(EventIndexActivity.EXTRA_MESSAGE);
+        String userId = user.getUid();
 
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -37,6 +41,8 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.navigation_profile:
+                        return true;
                     case R.id.navigation_events:
                         return true;
                     case R.id.navigation_home:
@@ -49,6 +55,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().getItem(2).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         database = FirebaseDatabase.getInstance();
@@ -65,8 +72,10 @@ public class UserProfileActivity extends AppCompatActivity {
         //Update user information on UI after retrieving data from database
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
+        TextView numEventTextView = findViewById(R.id.display_number_of_events);
         usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
+        numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size()-1));
     }
 
     ValueEventListener valueListener = new ValueEventListener() {
