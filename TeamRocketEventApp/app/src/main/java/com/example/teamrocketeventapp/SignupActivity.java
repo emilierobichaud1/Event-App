@@ -3,13 +3,13 @@ package com.example.teamrocketeventapp;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -23,20 +23,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import android.net.Uri;
+import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity {
+    private static final int PICK_IMAGE = 1;
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-
-
-    private static int PICK_IMAGE = 1;
     private ImageView profilePicture;
     private FloatingActionButton buttonLoadPicture;
     private Button signUpButton;
@@ -65,8 +62,8 @@ public class SignupActivity extends AppCompatActivity {
         myRef = database.getReference();
 
         //Get parts of the layout
-        profilePicture = (ImageView) findViewById (R.id.profilePicture);
-        buttonLoadPicture = (FloatingActionButton) findViewById (R.id.buttonLoadPicture);
+        profilePicture = (ImageView) findViewById(R.id.profilePicture);
+        buttonLoadPicture = (FloatingActionButton) findViewById(R.id.buttonLoadPicture);
         signUpButton = (Button) findViewById(R.id.signUpButton);
         cancelButton = (Button) findViewById(R.id.cancelButton);
         userText = (EditText) findViewById(R.id.usernameEditText);
@@ -79,29 +76,32 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
 
-        signUpButton.setOnClickListener(new View.OnClickListener(){
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 registerUser();
                 setContentView(R.layout.activity_signup_preferences);
 
-            }});
+            }
+        });
 
-        buttonLoadPicture.setOnClickListener(new View.OnClickListener(){
+        buttonLoadPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 pickImage();
 
-            }});
+            }
+        });
 
-        cancelButton.setOnClickListener(new View.OnClickListener(){
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setContentView(R.layout.activity_main);
 
-            }});
+            }
+        });
 
-        bdayText.setOnClickListener(new View.OnClickListener(){
+        bdayText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
@@ -113,14 +113,14 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
 
-                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        BirthDate = mDay + "/" + (mMonth + 1) + "/" + mYear;
                         bdayText.setText(BirthDate);
 
                     }
                 }, day, month, year);
                 dpd.show();
             }
-            });
+        });
     }
 
     private void registerUser() {
@@ -130,7 +130,7 @@ public class SignupActivity extends AppCompatActivity {
         String password = passwordText.getText().toString().trim();
         String passwordConf = passwordConfText.getText().toString().trim();
         Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher (username);
+        Matcher m = p.matcher(username);
         Matcher m2 = p.matcher(password);
         boolean b = m.find();
         boolean b2 = m2.find();
@@ -227,7 +227,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     //method id called upon sucessful registration
-    public void updateView (View view){
+    public void updateView(View view) {
         //go to event page after sucessful registration
         //TODO change MainActivity to the userprofile page
         Intent intent = new Intent(this, MainActivity.class);
@@ -238,7 +238,7 @@ public class SignupActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE);
+        startActivityForResult(intent, PICK_IMAGE);
 
     }
 
@@ -246,11 +246,10 @@ public class SignupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==PICK_IMAGE && resultCode==RESULT_OK) {
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            profilePicture.setImageURI(imageUri);
-            user = mAuth.getCurrentUser();
-            //saveUserInfo(user.getPhotoUrl(),ImageUri);
+
+            Picasso.with(this).load(imageUri).into(profilePicture);
         }
     }
 }
