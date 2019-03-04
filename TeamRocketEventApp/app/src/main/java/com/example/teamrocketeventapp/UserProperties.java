@@ -14,6 +14,8 @@ public class UserProperties {
     public String bday;
     public String address;
     public List<String> eventsList;
+    public List<String> preferences;
+    public Upload picUrl;
     public String id;
 
     public UserProperties(){
@@ -25,7 +27,10 @@ public class UserProperties {
         this.email = email;
         this.bday = bday;
         this.address = address;
+        this.preferences = new ArrayList<>();
         this.eventsList= new ArrayList<>();
+        this.picUrl = new Upload();
+
         this.id = id;
     }
 
@@ -44,7 +49,15 @@ public class UserProperties {
     public List<String> getEventsList() {
         return this.eventsList;
     }
+    public List<String> getPreferences() { return this.preferences; }
 
+    public void addPic(Upload newUpload) {
+        this.picUrl = newUpload;
+    }
+
+    public void addPreferences(String newPreference) {
+        preferences.add(newPreference);
+    }
     public String toString() {
         return username;
     }
