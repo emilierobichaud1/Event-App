@@ -17,6 +17,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -48,9 +50,16 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     ValueEventListener valueEventListener = new ValueEventListener() {
 
         private void addEventToMap(EventProperties event) {
+            BitmapDescriptor markerIcon;
+            switch (event.getCategory()) {
+                // TODO: Handle different categories
+                default:
+                    markerIcon = BitmapDescriptorFactory.defaultMarker();
+            }
+
             List<Double> eventCoordinates = event.getCoordinates();
             LatLng eventPosition = new LatLng(eventCoordinates.get(0), eventCoordinates.get(1));
-            mMap.addMarker(new MarkerOptions().position(eventPosition).title(event.getName()));
+            mMap.addMarker(new MarkerOptions().position(eventPosition).title(event.getName()).icon(markerIcon));
         }
 
         @Override
