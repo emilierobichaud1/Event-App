@@ -2,20 +2,24 @@ package com.example.teamrocketeventapp;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,20 +27,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import android.net.Uri;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SignupActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignupActivity extends AppCompatActivity {
+    private static final int PICK_IMAGE = 1;
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-
-
-    private static int PICK_IMAGE = 1;
+    private StorageReference myStorageRef;
     private ImageView profilePicture;
     private FloatingActionButton buttonLoadPicture;
     private Button signUpButton;
@@ -48,6 +53,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordConfText;
     private EditText addressText;
     private FirebaseUser user;
+    private String userId;
+    private Uri imageUri;
+    private UserProperties currentUser;
+    private String node;
 
     private ProgressDialog progressDialog;
     private DatePickerDialog dpd;
@@ -61,11 +70,15 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
+        user = mAuth.getCurrentUser();
+        userId = user.getUid();
+        node = "users/" + userId;
+        myStorageRef = FirebaseStorage.getInstance().getReference(node);
         myRef = database.getReference();
 
         //Get parts of the layout
-        profilePicture = (ImageView) findViewById (R.id.profilePicture);
-        buttonLoadPicture = (FloatingActionButton) findViewById (R.id.buttonLoadPicture);
+        profilePicture = (ImageView) findViewById(R.id.profilePicture);
+        buttonLoadPicture = (FloatingActionButton) findViewById(R.id.buttonLoadPicture);
         signUpButton = (Button) findViewById(R.id.signUpButton);
         cancelButton = (Button) findViewById(R.id.cancelButton);
         userText = (EditText) findViewById(R.id.usernameEditText);
@@ -77,10 +90,34 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         progressDialog = new ProgressDialog(this);
 
-        signUpButton.setOnClickListener(this);
-        buttonLoadPicture.setOnClickListener(this);
 
-        bdayText.setOnClickListener(new View.OnClickListener(){
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registerUser();
+                uploadFile();
+                //setContentView(R.layout.activity_signup_preferences);
+
+            }
+        });
+
+        buttonLoadPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickImage();
+
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setContentView(R.layout.activity_main);
+
+            }
+        });
+
+        bdayText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
@@ -92,14 +129,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
 
-                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        BirthDate = mDay + "/" + (mMonth + 1) + "/" + mYear;
                         bdayText.setText(BirthDate);
 
                     }
                 }, day, month, year);
                 dpd.show();
             }
-            });
+        });
     }
 
     private void registerUser() {
@@ -109,7 +146,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String password = passwordText.getText().toString().trim();
         String passwordConf = passwordConfText.getText().toString().trim();
         Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher (username);
+        Matcher m = p.matcher(username);
         Matcher m2 = p.matcher(password);
         boolean b = m.find();
         boolean b2 = m2.find();
@@ -164,8 +201,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            user = mAuth.getCurrentUser();
-                            saveUserInfo(user.getUid());    //add properties to database
+                            //user = mAuth.getCurrentUser();
+                            saveUserInfo(userId);    //add properties to database
                             updateView(null);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -187,14 +224,17 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String address = addressText.getText().toString().trim();
 
         //Create user object to pass into database call
-        UserProperties userProperties = new UserProperties(username, email, bday, address, userId);
-        userProperties.addEvent("");
+        currentUser = new UserProperties(username, email, bday, address, userId);
+        currentUser.addEvent("");
+        currentUser.addPreferences("");
+
+
 
         //add users/ to front of node name to keep database easily searchable
         String node = "users/" + userId;
 
         //Creates new node in database and saves data
-        myRef.child(node).setValue(userProperties);
+        myRef.child(node).setValue(currentUser);
     }
 
     public void cancel(View view) {
@@ -206,39 +246,64 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     //method id called upon sucessful registration
-    public void updateView (View view){
+    public void updateView(View view) {
         //go to event page after sucessful registration
         //TODO change MainActivity to the userprofile page
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        setContentView(R.layout.activity_signup_preferences);
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
     }
 
     public void pickImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"),PICK_IMAGE);
-    }
-    @Override
-    public void onClick(View view) {
-        if (view == signUpButton) {
-            registerUser();
-        }
-        if (view == cancelButton) {
+        startActivityForResult(intent, PICK_IMAGE);
 
-        }
-        if(view == buttonLoadPicture) {
-            pickImage();
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode==PICK_IMAGE && resultCode==RESULT_OK) {
-            Uri imageUri = data.getData();
-            profilePicture.setImageURI(imageUri);
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+
+            Picasso.with(this).load(imageUri).into(profilePicture);
+        }
+    }
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cr.getType(uri));
+    }
+
+    private void uploadFile() {
+        if (imageUri != null) {
+            myStorageRef.putFile(imageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return myStorageRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.e("logt", "then: " + downloadUri.toString());
+                        Upload upload = new Upload(downloadUri.toString(), node);
+                        myStorageRef = FirebaseStorage.getInstance().getReference(node);
+                        currentUser.addPic(upload);
+                        myRef.child(node).setValue(currentUser);
+                    } else {
+                        Toast.makeText(SignupActivity.this, "Upload Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 }
