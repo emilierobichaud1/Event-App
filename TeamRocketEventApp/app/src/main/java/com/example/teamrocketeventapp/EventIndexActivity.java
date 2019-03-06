@@ -42,7 +42,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<EventProperties> adapter;
     private ArrayList<String> searchNames = new ArrayList<>();
 
     DatabaseReference eventsRef;
@@ -70,7 +70,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                     EventProperties event = snapshot.getValue(EventProperties.class);
                     if (event != null) {
                         searchNames.add(event.name);
-                        adapter.add(event.name);
+                        adapter.add(event);
                         addEventToMap(event);
                     }
                 }
@@ -165,7 +165,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         //search by name stuff
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, searchNames);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
         listView = findViewById(R.id.searchList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
