@@ -42,7 +42,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
-    private ArrayAdapter adapter;
+    private ArrayAdapter<String> adapter;
     private ArrayList<String> searchNames = new ArrayList<>();
 
     DatabaseReference eventsRef;
@@ -50,51 +50,14 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     ValueEventListener valueEventListener = new ValueEventListener() {
 
         private void addEventToMap(EventProperties event) {
-            BitmapDescriptor markerIcon;
-            switch (event.getCategory()) {
-                case "Art":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-                    break;
-                case "Career":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-                    break;
-                case "Causes":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN);
-                    break;
-                case "Educational":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                    break;
-                case "Film":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA);
-                    break;
-                case "Fitness":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE);
-                    break;
-                case "Food":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE);
-                    break;
-                case "Games":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
-                    break;
-                case "Literature":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-                    break;
-                case "Music":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-                    break;
-                case "Religion":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN);
-                    break;
-                case "Social":
-                    markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-                    break;
-                default:
-                    markerIcon = BitmapDescriptorFactory.defaultMarker();
-            }
-
+            Category eventCategory = CategoryFactory.fromString(event.getCategory());
+            BitmapDescriptor markerIcon = eventCategory.getMarkerIcon();
             List<Double> eventCoordinates = event.getCoordinates();
             LatLng eventPosition = new LatLng(eventCoordinates.get(0), eventCoordinates.get(1));
-            mMap.addMarker(new MarkerOptions().position(eventPosition).title(event.getName()).icon(markerIcon));
+            mMap.addMarker(new MarkerOptions()
+                    .position(eventPosition)
+                    .title(event.getName())
+                    .icon(markerIcon));
         }
 
         @Override
@@ -107,7 +70,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                     EventProperties event = snapshot.getValue(EventProperties.class);
                     if (event != null) {
                         searchNames.add(event.name);
-                        adapter.add(event);
+                        adapter.add(event.name);
                         addEventToMap(event);
                     }
                 }
@@ -202,8 +165,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         //search by name stuff
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchNames);
-        listView = (ListView) findViewById(R.id.searchList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, searchNames);
+        listView = findViewById(R.id.searchList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
