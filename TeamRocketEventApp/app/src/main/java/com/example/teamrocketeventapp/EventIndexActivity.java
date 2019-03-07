@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -17,10 +15,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +38,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
-    private ArrayAdapter adapter;
+    private ArrayAdapter<EventProperties> adapter;
     private ArrayList<String> searchNames = new ArrayList<>();
 
     DatabaseReference eventsRef;
@@ -48,9 +46,14 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     ValueEventListener valueEventListener = new ValueEventListener() {
 
         private void addEventToMap(EventProperties event) {
+            Category eventCategory = CategoryFactory.getCategory(event.getCategory());
+            BitmapDescriptor markerIcon = eventCategory.getMarkerIcon();
             List<Double> eventCoordinates = event.getCoordinates();
             LatLng eventPosition = new LatLng(eventCoordinates.get(0), eventCoordinates.get(1));
-            mMap.addMarker(new MarkerOptions().position(eventPosition).title(event.getName()));
+            mMap.addMarker(new MarkerOptions()
+                    .position(eventPosition)
+                    .title(event.getName())
+                    .icon(markerIcon));
         }
 
         @Override
@@ -158,8 +161,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
 
         //search by name stuff
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchNames);
-        listView = (ListView) findViewById(R.id.searchList);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
+        listView = findViewById(R.id.searchList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
