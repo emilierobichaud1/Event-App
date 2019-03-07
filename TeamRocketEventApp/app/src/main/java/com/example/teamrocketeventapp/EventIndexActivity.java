@@ -5,20 +5,24 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +42,10 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private TextView mTextMessage;
     private SearchView searchView;
     private ListView listView;
+    private ListView CatagorylistView;
     private ArrayAdapter<EventProperties> adapter;
+    private ArrayAdapter Catagoryadapter;
+    private ArrayList<String> CatagoryNames = new ArrayList<>();
     private ArrayList<String> searchNames = new ArrayList<>();
 
     DatabaseReference eventsRef;
@@ -113,6 +120,9 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
             }
         };
 
+
+
+
     private ListView.OnItemClickListener searchResultsClickListener = (parent, view, position, id) -> {
         EventProperties event = (EventProperties) parent.getItemAtPosition(position);
         //event.getId()
@@ -120,6 +130,16 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         intent.putExtra("eventid", event.getId());
         startActivity(intent);
     };
+
+
+    private ListView.OnItemClickListener CatagoryClickListener = (parent, view, position, id) -> {
+
+        String cat = (String) parent.getItemAtPosition(position);
+        Intent intent = new Intent(view.getContext(), EventCategoryListActivity.class);
+        intent.putExtra("category", cat);
+        startActivity(intent);
+    };
+
 
     private boolean inArea(EventProperties event) {
         LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
@@ -166,9 +186,18 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(searchResultsClickListener);
         adapter.notifyDataSetChanged();
-
         searchView = findViewById(R.id.searchBar);
         searchView.setOnQueryTextListener(searchListener);
+
+        //event categories search view
+        Catagoryadapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, CatagoryNames);
+        CatagorylistView = (ListView) findViewById(R.id.eventListView);
+        CatagorylistView.setAdapter(Catagoryadapter);
+        CatagorylistView.setOnItemClickListener(CatagoryClickListener);
+        Catagoryadapter.notifyDataSetChanged();
+        initializeCatagories();
+
+
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -197,6 +226,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     }
 
 
+
+
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
     private void setSearchView(){
         findViewById(R.id.searchList).setVisibility(View.VISIBLE);
@@ -211,6 +242,25 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         findViewById(R.id.map).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
         findViewById(R.id.navigation).setVisibility(View.VISIBLE);
+    }
+
+    //loads catagory names into an adapter
+    private void initializeCatagories(){
+        Catagoryadapter.add("Art");
+        Catagoryadapter.add("Career");
+        Catagoryadapter.add("Causes");
+        Catagoryadapter.add("Educational");
+        Catagoryadapter.add("Film");
+        Catagoryadapter.add("Fitness");
+        Catagoryadapter.add("Food");
+        Catagoryadapter.add("Games");
+        Catagoryadapter.add("Literature");
+        Catagoryadapter.add("Music");
+        Catagoryadapter.add("Religion");
+        Catagoryadapter.add("Social");
+        Catagoryadapter.add("Tech");
+        Catagoryadapter.add("Other");
+        Catagoryadapter.notifyDataSetChanged();
     }
 
 
