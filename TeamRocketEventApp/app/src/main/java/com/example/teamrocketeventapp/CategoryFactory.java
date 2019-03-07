@@ -3,7 +3,7 @@ package com.example.teamrocketeventapp;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class CategoryFactory {
-    public static Category fromString(String category) {
+    public static Category getCategory(String category) {
         switch (category) {
             case "Art":
                 return new Category(category,
