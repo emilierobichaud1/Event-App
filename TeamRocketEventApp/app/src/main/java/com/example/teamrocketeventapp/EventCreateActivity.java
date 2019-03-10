@@ -113,7 +113,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
                         dateText.setText(BirthDate);
 
                     }
-                }, day, month, year);
+                }, year, month+1, day);
                 dpd.show();
             }
         });
