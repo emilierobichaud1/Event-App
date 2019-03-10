@@ -216,7 +216,15 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         Catagoryadapter.notifyDataSetChanged();
         initializeCatagories();
 
-        getPermissions();
+        checkGPS();
+
+        location.setListener(new SimpleLocation.Listener() {
+
+            public void onPositionChanged() {
+                updateMap();
+            }
+
+        });
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -284,24 +292,17 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        //Default location is Toronto
         double latitude = 43.653908;
         double longitude = -79.384293;
 
-        LatLng defaultLocation = new LatLng(latitude, longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10));
-    }
-
-    @AfterPermissionGranted(123)//use constant for requestCode
-    private void getPermissions() {
-        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            Toast.makeText(this, "Showing user location on map", Toast.LENGTH_SHORT).show();
-        } else {
-            EasyPermissions.requestPermissions(this, "Permission required to show user location on map", 123, perms);
+        //Default location is Toronto
+        if (location.hasLocationEnabled()) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
         }
 
-        checkGPS();
+        LatLng defaultLocation = new LatLng(latitude, longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10));
     }
 
     private void checkGPS() {
@@ -338,6 +339,21 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         double lng = location.getLongitude();
         LatLng user = new LatLng(lat, lng);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(user, 10));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        location.beginUpdates();
+
+    }
+
+    @Override
+    protected void onPause() {
+        location.endUpdates();
+
+        super.onPause();
     }
 
 
