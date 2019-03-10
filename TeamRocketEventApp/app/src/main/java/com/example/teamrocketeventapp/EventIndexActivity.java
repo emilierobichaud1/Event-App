@@ -190,12 +190,13 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         searchView.setOnQueryTextListener(searchListener);
 
         //event categories search view
+        initializeCatagories();
         Catagoryadapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, CatagoryNames);
         CatagorylistView = (ListView) findViewById(R.id.eventListView);
         CatagorylistView.setAdapter(Catagoryadapter);
         CatagorylistView.setOnItemClickListener(CatagoryClickListener);
         Catagoryadapter.notifyDataSetChanged();
-        initializeCatagories();
+
 
 
 
@@ -246,21 +247,20 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
     //loads catagory names into an adapter
     private void initializeCatagories(){
-        Catagoryadapter.add("Art");
-        Catagoryadapter.add("Career");
-        Catagoryadapter.add("Causes");
-        Catagoryadapter.add("Educational");
-        Catagoryadapter.add("Film");
-        Catagoryadapter.add("Fitness");
-        Catagoryadapter.add("Food");
-        Catagoryadapter.add("Games");
-        Catagoryadapter.add("Literature");
-        Catagoryadapter.add("Music");
-        Catagoryadapter.add("Religion");
-        Catagoryadapter.add("Social");
-        Catagoryadapter.add("Tech");
-        Catagoryadapter.add("Other");
-        Catagoryadapter.notifyDataSetChanged();
+        CatagoryNames.add("Art");
+        CatagoryNames.add("Career");
+        CatagoryNames.add("Causes");
+        CatagoryNames.add("Educational");
+        CatagoryNames.add("Film");
+        CatagoryNames.add("Fitness");
+        CatagoryNames.add("Food");
+        CatagoryNames.add("Games");
+        CatagoryNames.add("Literature");
+        CatagoryNames.add("Music");
+        CatagoryNames.add("Religion");
+        CatagoryNames.add("Social");
+        CatagoryNames.add("Tech");
+        CatagoryNames.add("Other");
     }
 
 

@@ -20,6 +20,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -31,6 +32,7 @@ public class EventCategoryListActivity extends AppCompatActivity {
     private ArrayAdapter adapter;
     private ListView EventlistView;
     private Spinner spin;
+    private Calendar c;
     private int SortType = 0; //0: most recent, 1:attendees
 
 
@@ -127,15 +129,50 @@ public class EventCategoryListActivity extends AppCompatActivity {
                     }
 
                     //sort by number of attendees
-                    Collections.sort(temp, new Comparator<EventProperties>(){
-                        public int compare(EventProperties o1, EventProperties o2){
-                            if(o1.attendees.size() == o2.attendees.size()){
-                                return 0;}
-                            return o1.attendees.size() < o2.attendees.size() ? -1 : 1;
-                        }
-                    });
-                    Collections.reverse(temp);
+                    if(SortType == 1) {
+                        Collections.sort(temp, new Comparator<EventProperties>() {
+                            public int compare(EventProperties o1, EventProperties o2) {
+                                if (o1.attendees.size() == o2.attendees.size()) {
+                                    return 0;
+                                }
+                                return o1.attendees.size() < o2.attendees.size() ? -1 : 1;
+                            }
+                        });
+                        Collections.reverse(temp);
+                    }
+                    //sort by date
+                    else if(SortType == 0){
+                        Collections.sort(temp, new Comparator<EventProperties>() {
+                            public int compare(EventProperties o1, EventProperties o2) {
+                                String[] parts1 = o1.date.split("/");
+                                int day1 = Integer.parseInt(parts1[0]);
+                                int month1 = Integer.parseInt(parts1[1]);
+                                int year1 = Integer.parseInt(parts1[2]);
 
+                                String[] parts2 = o2.date.split("/");
+                                int day2 = Integer.parseInt(parts1[0]);
+                                int month2 = Integer.parseInt(parts1[1]);
+                                int year2 = Integer.parseInt(parts1[2]);
+
+                                boolean check = year1 > year2;
+
+                                if (day1 == day2 && month1 == month2 && year1 == year2) {
+                                    return 0;
+                                }
+
+                                if(year1 > year2){ check = true; }
+                                else if(year1 == year2){
+                                    if(month1 > month2){check = true;}
+                                    else if(month1 == month2){
+                                        if(day1 > day2){check = true;}
+                                        else{check = false; }
+                                    }
+                                }
+
+                                return check ? -1 : 1;
+                            }
+                        });
+                    }
 
                     for (EventProperties e: temp){
                         Names.add(e.name);
@@ -146,6 +183,5 @@ public class EventCategoryListActivity extends AppCompatActivity {
             }
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-
     }
 }
