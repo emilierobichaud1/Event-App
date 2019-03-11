@@ -1,11 +1,16 @@
 package com.example.teamrocketeventapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 
 public class UserProfileActivity extends AppCompatActivity {
@@ -26,22 +32,30 @@ public class UserProfileActivity extends AppCompatActivity {
     private StorageReference myStorageRef;
     private UserProperties currentUser;
     private FirebaseUser user;
-    private String userId;
+    //private String userId;
     private String node;
-
+    private ImageView profilePic;
+    private String uid;
+    SharedPreferences sharedPreferences;
+    public static final String userId="userId";
+    public static final String MyPREFERENCES = "MyPrefs" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        profilePic = (ImageView) findViewById(R.id.profilePic);
+
+        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        uid = sharedPreferences.getString(userId, "");
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        user = mAuth.getCurrentUser();
-        userId = user.getUid();
+        //user = mAuth.getCurrentUser();
+        //userId = user.getUid();
         node = "users/" + userId;
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference usersRef = database.child("users").child(userId);
+        DatabaseReference usersRef = database.child("users").child(uid);
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -87,8 +101,9 @@ public class UserProfileActivity extends AppCompatActivity {
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
         TextView numEventTextView = findViewById(R.id.display_number_of_events);
-        usernameTextView.setText("Username: " + currentUser.getUsername());
+        usernameTextView.setText("Username: " + currentUser.getAddress());
         addressTextView.setText("Address: " + currentUser.getAddress());
         numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size() - 1));
+        Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
     }
 }

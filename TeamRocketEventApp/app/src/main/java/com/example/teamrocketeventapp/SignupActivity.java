@@ -3,7 +3,9 @@ package com.example.teamrocketeventapp;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,28 +55,38 @@ public class SignupActivity extends AppCompatActivity {
     private EditText passwordConfText;
     private EditText addressText;
     private FirebaseUser user;
-    private String userId;
+    public static final String userId="userId";
     private Uri imageUri;
     private UserProperties currentUser;
     private String node;
+    SharedPreferences sharedpreferences;
 
     private ProgressDialog progressDialog;
     private DatePickerDialog dpd;
     private Calendar c;
     private String BirthDate;
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    private String userIdtemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         user = mAuth.getCurrentUser();
-        userId = user.getUid();
-        node = "users/" + userId;
+        userIdtemp = user.getUid();
+        node = "users/" + userIdtemp;
         myStorageRef = FirebaseStorage.getInstance().getReference(node);
         myRef = database.getReference();
+
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        editor.putString(userId, userIdtemp);
+        editor.commit();
 
         //Get parts of the layout
         profilePicture = (ImageView) findViewById(R.id.profilePicture);
