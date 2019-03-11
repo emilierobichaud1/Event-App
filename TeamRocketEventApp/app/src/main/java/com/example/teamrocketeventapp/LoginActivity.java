@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
 
                             Log.w(TAG, "createUserWithEmail:success");
-                            Toast.makeText(LoginActivity.this, "Login Success ",
+                            Toast.makeText(LoginActivity.this, "Login Success",
                                     Toast.LENGTH_SHORT).show();
 
                             updateUI(null);
