@@ -3,8 +3,6 @@ package com.example.teamrocketeventapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -13,32 +11,22 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
-    private FirebaseAuth mAuth;
-    private StorageReference myStorageRef;
+    public static final String userId = "userId";
+    public static final String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedPreferences;
     private UserProperties currentUser;
-    private FirebaseUser user;
-    //private String userId;
-    private String node;
     private ImageView profilePic;
     private String uid;
-    SharedPreferences sharedPreferences;
-    public static final String userId="userId";
-    public static final String MyPREFERENCES = "MyPrefs" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,19 +37,14 @@ public class UserProfileActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         uid = sharedPreferences.getString(userId, "");
-        mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        //user = mAuth.getCurrentUser();
-        //userId = user.getUid();
-        node = "users/" + userId;
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference usersRef = database.child("users").child(uid);
         usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    currentUser = dataSnapshot.getValue(UserProperties.class);
-                    updateUserInfo(currentUser);
+                currentUser = dataSnapshot.getValue(UserProperties.class);
+                updateUserInfo(currentUser);
                 //}
             }
 
@@ -82,7 +65,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     case R.id.navigation_events:
                         return true;
                     case R.id.navigation_home:
-                        //mTextMessage.setText(R.string.profile);
                         Intent intent1 = new Intent(UserProfileActivity.this, EventIndexActivity.class); //temporary change for search testing
                         startActivity(intent1);
                         return true;
@@ -101,7 +83,7 @@ public class UserProfileActivity extends AppCompatActivity {
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
         TextView numEventTextView = findViewById(R.id.display_number_of_events);
-        usernameTextView.setText("Username: " + currentUser.getAddress());
+        usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
         numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size() - 1));
         Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
