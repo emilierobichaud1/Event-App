@@ -1,6 +1,8 @@
 package com.example.teamrocketeventapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,6 +23,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,6 +33,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordText;
     private EditText emailText;
     private FirebaseUser user;
+    //private String userId;
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+    private StorageReference myStorageRef;
+    private String uid;
+    SharedPreferences sharedPreferences;
+    public static final String userId="userId";
+    public static final String MyPREFERENCES = "MyPrefs" ;
     public static final String EXTRA_MESSAGE = "com.example.teamrocketeventapp.MESSAGE";
 
 
@@ -39,10 +51,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        uid = sharedPreferences.getString(userId, "");
         emailText = (EditText) findViewById(R.id.enterEmail);
         passwordText = (EditText) findViewById(R.id.enterPassword);
         Auth = FirebaseAuth.getInstance();
-        user=Auth.getCurrentUser();
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+
+
+
+
 
     }
     public void cancel (View view){
@@ -57,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String pass = passwordText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
+
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
@@ -73,15 +93,18 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            //user=Auth.getCurrentUser();
+                            //userId=user.getUid();
 
 
-                            //FirebaseUser currUser = Auth.getCurrentUser();
+
+
 
                             //String node = "users/" + user.getUid();
                             //user=currUser;
 
                             Log.w(TAG, "createUserWithEmail:success");
-                            Toast.makeText(LoginActivity.this, "Login Success",
+                            Toast.makeText(LoginActivity.this, "Login Success " + uid,
                                     Toast.LENGTH_SHORT).show();
 
                             updateUI(null, user);
@@ -100,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
         //go to event page after sucessful login
         //TODO change MainActivity to the userprofile page
         Intent intent = new Intent(this, EventIndexActivity.class); //temporary change for search testing
-        intent.putExtra(EXTRA_MESSAGE, user.getUid());
+        //intent.putExtra(EXTRA_MESSAGE, user.getUid());
         startActivity(intent);
     }
 
