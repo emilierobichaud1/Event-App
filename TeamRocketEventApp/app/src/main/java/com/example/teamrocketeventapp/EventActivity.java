@@ -89,8 +89,6 @@ public class EventActivity extends AppCompatActivity {
     }
 
     public void addAttendee(View view) {
-
-
         ValueEventListener valueEventListener2 = new ValueEventListener() {
             @Override
             //method that activates upon query
@@ -135,7 +133,7 @@ public class EventActivity extends AppCompatActivity {
                             UserProperties usr = snapshot.getValue(UserProperties.class);
                             if (usr != null) {
                                 hostName = usr.getUsername();
-                                isHost = usr.getId().equals(user.getUid());
+                                isHost = user.getUid().equals(usr.getId());
                             }
                             loadData();
                         }
