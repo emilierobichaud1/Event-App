@@ -58,6 +58,10 @@ public class EventProperties {
         attendees.add(userId);
     }
 
+    public void removeAttendee(String userId) {
+        attendees.remove(userId);
+    }
+
     public String toString() {
         return name;
     }
