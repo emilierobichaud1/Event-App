@@ -39,7 +39,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity {
+    public static final String userId = "userId";
+    public static final String MyPREFERENCES = "MyPrefs";
     private static final int PICK_IMAGE = 1;
+    SharedPreferences sharedpreferences;
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
@@ -55,17 +58,13 @@ public class SignupActivity extends AppCompatActivity {
     private EditText passwordConfText;
     private EditText addressText;
     private FirebaseUser user;
-    public static final String userId="userId";
     private Uri imageUri;
     private UserProperties currentUser;
     private String node;
-    SharedPreferences sharedpreferences;
-
     private ProgressDialog progressDialog;
     private DatePickerDialog dpd;
     private Calendar c;
     private String BirthDate;
-    public static final String MyPREFERENCES = "MyPrefs" ;
     private String userIdtemp;
 
     @Override
@@ -213,7 +212,6 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //user = mAuth.getCurrentUser();
                             saveUserInfo(userId);    //add properties to database
                             updateView(null);
                         } else {
@@ -239,7 +237,6 @@ public class SignupActivity extends AppCompatActivity {
         currentUser = new UserProperties(username, email, bday, address, userId);
         currentUser.addEvent("");
         currentUser.addPreferences("");
-
 
 
         //add users/ to front of node name to keep database easily searchable

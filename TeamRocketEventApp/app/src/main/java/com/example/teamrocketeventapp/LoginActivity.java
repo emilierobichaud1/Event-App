@@ -3,48 +3,31 @@ package com.example.teamrocketeventapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.google.firebase.auth.AuthResult;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import android.support.annotation.NonNull;
-import android.util.Log;
-
-
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String userId = "userId";
+    public static final String MyPREFERENCES = "MyPrefs";
+    public static final String EXTRA_MESSAGE = "com.example.teamrocketeventapp.MESSAGE";
     private static final String TAG = "LoginActivity";
+    SharedPreferences sharedPreferences;
     private FirebaseAuth Auth;
     private EditText passwordText;
     private EditText emailText;
-    private FirebaseUser user;
-    //private String userId;
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
-    private StorageReference myStorageRef;
     private String uid;
-    SharedPreferences sharedPreferences;
-    public static final String userId="userId";
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String EXTRA_MESSAGE = "com.example.teamrocketeventapp.MESSAGE";
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +39,11 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.enterEmail);
         passwordText = (EditText) findViewById(R.id.enterPassword);
         Auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
-
-
-
 
 
     }
-    public void cancel (View view){
+
+    public void cancel(View view) {
         //go back to main page when cancel is pressed
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -72,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void login(View view){
+    public void login(View view) {
 
         String pass = passwordText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
@@ -93,21 +72,12 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            //user=Auth.getCurrentUser();
-                            //userId=user.getUid();
-
-
-
-
-
-                            //String node = "users/" + user.getUid();
-                            //user=currUser;
 
                             Log.w(TAG, "createUserWithEmail:success");
                             Toast.makeText(LoginActivity.this, "Login Success " + uid,
                                     Toast.LENGTH_SHORT).show();
 
-                            updateUI(null, user);
+                            updateUI(null);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -119,14 +89,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //method id called upon sucessful login
-    public void updateUI (View view, FirebaseUser user){
+    public void updateUI(View view) {
         //go to event page after sucessful login
         //TODO change MainActivity to the userprofile page
         Intent intent = new Intent(this, EventIndexActivity.class); //temporary change for search testing
-        //intent.putExtra(EXTRA_MESSAGE, user.getUid());
         startActivity(intent);
     }
-
 
 
 }
