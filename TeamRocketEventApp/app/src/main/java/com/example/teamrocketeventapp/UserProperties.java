@@ -34,6 +34,21 @@ public class UserProperties {
         this.id = id;
     }
 
+    public void setUsername(String newName) {  this.username=newName; }
+    public void setEmail(String newEmail) { this.email=newEmail;}
+    public void setBday(String newBday) { this.bday=newBday;}
+
+    public void setAddress (String newAddress){
+        this.address=newAddress;
+    }
+    public void setId (String newId){
+        this.id=newId;
+    }
+    public void setEventsList(List<String> newEvents) {
+        this.eventsList=newEvents;
+    }
+    public void setPreferences(List<String> newPreferences) { this.preferences=newPreferences; }
+
     public String getUsername() {
         return this.username;
     }

@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth Auth;
     private EditText passwordText;
     private EditText emailText;
+    private FirebaseUser user;
     public static final String EXTRA_MESSAGE = "com.example.teamrocketeventapp.MESSAGE";
 
 
@@ -41,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.enterEmail);
         passwordText = (EditText) findViewById(R.id.enterPassword);
         Auth = FirebaseAuth.getInstance();
+        user=Auth.getCurrentUser();
 
     }
     public void cancel (View view){
@@ -73,12 +75,13 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
 
 
-                            FirebaseUser user = Auth.getCurrentUser();
+                            //FirebaseUser currUser = Auth.getCurrentUser();
 
-                            String node = "users/" + user.getUid();
+                            //String node = "users/" + user.getUid();
+                            //user=currUser;
 
                             Log.w(TAG, "createUserWithEmail:success");
-                            Toast.makeText(LoginActivity.this, "Login Success.",
+                            Toast.makeText(LoginActivity.this, "Login Success",
                                     Toast.LENGTH_SHORT).show();
 
                             updateUI(null, user);

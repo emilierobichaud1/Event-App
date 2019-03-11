@@ -1,14 +1,12 @@
 package com.example.teamrocketeventapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -17,14 +15,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
 
 public class UserProfileActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+    private FirebaseAuth mAuth;
+    private StorageReference myStorageRef;
+    private UserProperties currentUser;
+    private FirebaseUser user;
+    private String userId;
+    private String node;
 
 
     @Override
@@ -32,8 +35,27 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        Intent intent = getIntent();
-        String userId = user.getUid();
+        mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        user = mAuth.getCurrentUser();
+        userId = user.getUid();
+        node = "users/" + userId;
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference usersRef = database.child("users").child(userId);
+        usersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    currentUser = dataSnapshot.getValue(UserProperties.class);
+                    updateUserInfo(currentUser);
+                //}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -57,39 +79,16 @@ public class UserProfileActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.getMenu().getItem(2).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
-        String node = "users/" + userId;
-        myRef.child(node).addValueEventListener(valueListener);
-
-
     }
 
 
-
-    public void updateUserInfo(UserProperties currentUser){
+    public void updateUserInfo(UserProperties currentUser) {
         //Update user information on UI after retrieving data from database
         TextView usernameTextView = findViewById(R.id.display_username);
         TextView addressTextView = findViewById(R.id.display_address);
         TextView numEventTextView = findViewById(R.id.display_number_of_events);
         usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
-        numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size()-1));
+        numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size() - 1));
     }
-
-    ValueEventListener valueListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            // Get user from database and use the values to update the UI
-            UserProperties value = dataSnapshot.getValue(UserProperties.class);
-            updateUserInfo(value);
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    };
-
 }
