@@ -1,5 +1,9 @@
 package com.example.teamrocketeventapp;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,9 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.model.BitmapDescriptor;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +40,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import im.delight.android.location.SimpleLocation;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class EventIndexActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -47,6 +58,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     private ArrayAdapter Catagoryadapter;
     private ArrayList<String> CatagoryNames = new ArrayList<>();
     private ArrayList<String> searchNames = new ArrayList<>();
+    private SimpleLocation location;
+    private MapFragment mapFragment;
 
     DatabaseReference eventsRef;
     private FirebaseDatabase database;
@@ -66,10 +79,10 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         @Override
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            if(dataSnapshot.exists()){
+            if (dataSnapshot.exists()) {
                 searchNames = new ArrayList<>();
                 adapter.clear();
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     EventProperties event = snapshot.getValue(EventProperties.class);
                     if (event != null) {
                         searchNames.add(event.name);
@@ -86,41 +99,37 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         }
     };
 
-    private SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener(){
+    private SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(query.length() == 0) {
-                    resetSearchView();
-                    loadFromDb(null, null);
-                }
-                else{
-                    setSearchView();
-                    loadFromDb(null, query);
-                }
-                adapter.notifyDataSetChanged();
-
-                return false;
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            if (query.length() == 0) {
+                resetSearchView();
+                loadFromDb(null, null);
+            } else {
+                setSearchView();
+                loadFromDb(null, query);
             }
+            adapter.notifyDataSetChanged();
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if(newText.length() == 0) {
-                    resetSearchView();
-                    loadFromDb(null, null);
-                }
-                else{
-                    setSearchView();
-                    loadFromDb(null, newText);
-                }
-                adapter.getFilter().filter(newText);
-                adapter.notifyDataSetChanged();
+            return false;
+        }
 
-                return false;
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            if (newText.length() == 0) {
+                resetSearchView();
+                loadFromDb(null, null);
+            } else {
+                setSearchView();
+                loadFromDb(null, newText);
             }
-        };
+            adapter.getFilter().filter(newText);
+            adapter.notifyDataSetChanged();
 
-
+            return false;
+        }
+    };
 
 
     private ListView.OnItemClickListener searchResultsClickListener = (parent, view, position, id) -> {
@@ -149,6 +158,14 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_index);
@@ -156,20 +173,20 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         mTextMessage = findViewById(R.id.message);
         BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
                 = item -> {
-                    switch (item.getItemId()) {
-                        case R.id.navigation_home:
-                            return true;
-                        case R.id.navigation_events:
-                            return true;
-                        case R.id.navigation_profile:
-                            //mTextMessage.setText(R.string.profile);
-                            Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
-                            intent2.putExtra(EXTRA_MESSAGE, userId);
-                            startActivity(intent2);
-                            return true;
-                    }
-                    return false;
-                };
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    return true;
+                case R.id.navigation_events:
+                    return true;
+                case R.id.navigation_profile:
+                    //mTextMessage.setText(R.string.profile);
+                    Intent intent2 = new Intent(EventIndexActivity.this, UserProfileActivity.class); //temporary change for search testing
+                    intent2.putExtra(EXTRA_MESSAGE, userId);
+                    startActivity(intent2);
+                    return true;
+            }
+            return false;
+        };
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.getMenu().getItem(0).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -179,6 +196,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
         Intent intent = getIntent();
         userId = intent.getStringExtra(LoginActivity.EXTRA_MESSAGE);
+
+        location = new SimpleLocation(this);
 
         //search by name stuff
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>());
@@ -198,9 +217,17 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         Catagoryadapter.notifyDataSetChanged();
 
 
+        checkGPS();
 
+        location.setListener(new SimpleLocation.Listener() {
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+            public void onPositionChanged() {
+                updateMap();
+            }
+
+        });
+
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -210,16 +237,15 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     //pulls loads info from the database into the page
-    public void loadFromDb(View view, String searchQuery){
+    public void loadFromDb(View view, String searchQuery) {
 
         //query setup
         Query query;
         eventsRef = FirebaseDatabase.getInstance().getReference("events");
         //eventsRef.addListenerForSingleValueEvent(valueEventListener);
-        if(searchQuery == null) {
+        if (searchQuery == null) {
             query = FirebaseDatabase.getInstance().getReference("events").orderByChild("name");
-        }
-        else {
+        } else {
             query = FirebaseDatabase.getInstance().getReference("events").orderByChild("name").startAt(searchQuery).endAt(searchQuery + "\uf8ff");
         }
         query.addListenerForSingleValueEvent(valueEventListener);
@@ -227,10 +253,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     }
 
 
-
-
     //has the list view overlap all of the other elements by setting it to visible and setting everything else to gone
-    private void setSearchView(){
+    private void setSearchView() {
         findViewById(R.id.searchList).setVisibility(View.VISIBLE);
         findViewById(R.id.map).setVisibility(View.GONE);
         findViewById(R.id.eventListView).setVisibility(View.GONE);
@@ -238,7 +262,7 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     // resets stuff done by setSearchView
-    private void resetSearchView(){
+    private void resetSearchView() {
         findViewById(R.id.searchList).setVisibility(View.GONE);
         findViewById(R.id.map).setVisibility(View.VISIBLE);
         findViewById(R.id.eventListView).setVisibility(View.VISIBLE);
@@ -268,9 +292,69 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng toronto = new LatLng(43.6532, -79.3832);
+        double latitude = 43.653908;
+        double longitude = -79.384293;
 
-        mMap.addMarker(new MarkerOptions().position(toronto).title("Toronto"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(toronto));
+        //Default location is Toronto
+        if (location.hasLocationEnabled()) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+
+        LatLng defaultLocation = new LatLng(latitude, longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 10));
     }
+
+    private void checkGPS() {
+        if (!location.hasLocationEnabled()) {
+            AlertDialog.Builder gpsBuilder = new AlertDialog.Builder(this);
+            gpsBuilder.setMessage("GPS required to show location on map.");
+            gpsBuilder.setCancelable(true);
+
+            gpsBuilder.setPositiveButton(
+                    "Enable GPS",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            SimpleLocation.openSettings(EventIndexActivity.this);
+                            dialog.cancel();
+                        }
+
+                    });
+
+            gpsBuilder.setNegativeButton(
+                    "Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog gpsDialog = gpsBuilder.create();
+            gpsDialog.show();
+        }
+    }
+
+    private void updateMap() {
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+        LatLng user = new LatLng(lat, lng);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(user, 10));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        location.beginUpdates();
+
+    }
+
+    @Override
+    protected void onPause() {
+        location.endUpdates();
+
+        super.onPause();
+    }
+
+
 }
