@@ -25,9 +25,10 @@ public class EventActivity extends AppCompatActivity {
     EventProperties event;
     UserProperties currentUser;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String eventId;
     private String hostName;
-    private boolean isHost = false;
+    private UserProperties hostUser;
 
     //needed to pull data from the database
     ValueEventListener valueEventListener = new ValueEventListener() {
@@ -47,7 +48,6 @@ public class EventActivity extends AppCompatActivity {
 
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +77,19 @@ public class EventActivity extends AppCompatActivity {
             //get the eventproperties object
             eventId = (String) b.get("eventid");
 
-            DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference("events");
+            DatabaseReference eventsRef = database.getReference("events");
             Query query = eventsRef.orderByChild("id").equalTo(eventId);
             query.addListenerForSingleValueEvent(valueEventListener);
         }
 
-        if (isHost) {
+        if (currentUserIsHost()) {
             Button cancelButton = findViewById(R.id.cancelButton);
             cancelButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    private boolean currentUserIsHost() {
+        return user.getUid().equals(hostUser.getId());
     }
 
     public void addAttendee(View view) {
@@ -110,20 +114,20 @@ public class EventActivity extends AppCompatActivity {
         };
 
         //get the UserProperties object
-        Query usersQuery = FirebaseDatabase.getInstance().getReference("users").orderByChild("id").equalTo(user.getUid());
+        Query usersQuery = database.getReference("users").orderByChild("id").equalTo(user.getUid());
         usersQuery.addListenerForSingleValueEvent(valueEventListener2);
 
         event.addAttendee(user.getUid());
 
 
-        FirebaseDatabase.getInstance().getReference("events").child(eventId).setValue(event);
+        database.getReference("events").child(eventId).setValue(event);
 
 
     }
 
 
     private void getHostName() {
-        Query query2 = FirebaseDatabase.getInstance().getReference("users");
+        Query query2 = database.getReference("users");
         query2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -133,7 +137,7 @@ public class EventActivity extends AppCompatActivity {
                             UserProperties usr = snapshot.getValue(UserProperties.class);
                             if (usr != null) {
                                 hostName = usr.getUsername();
-                                isHost = user.getUid().equals(usr.getId());
+                                hostUser = usr;
                             }
                             loadData();
                         }
@@ -148,11 +152,11 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void changeUser(UserProperties user) {
-        FirebaseDatabase.getInstance().getReference("users").child(user.getId()).setValue(user);
+        database.getReference("users").child(user.getId()).setValue(user);
     }
 
     private void changeEvent(EventProperties event) {
-        FirebaseDatabase.getInstance().getReference("events").child(event.getId()).setValue(event);
+        database.getReference("events").child(event.getId()).setValue(event);
     }
 
     private void loadData() {
@@ -173,7 +177,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     private void unregister(String userId) {
-        DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference usersReference = database.getReference("users");
 
         Query usersQuery = usersReference.orderByChild("id").equalTo(userId);
         usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -206,7 +210,7 @@ public class EventActivity extends AppCompatActivity {
                         for (String userId : event.attendees) {
                             unregister(userId);
                         }
-                        FirebaseDatabase.getInstance().getReference("events").child(eventId).removeValue();
+                        database.getReference("events").child(eventId).removeValue();
                         Toast.makeText(EventActivity.this, "Event cancelled", Toast.LENGTH_SHORT).show();
                         openEventIndex(null);
                     })
