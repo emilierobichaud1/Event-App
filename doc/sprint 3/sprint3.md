@@ -22,6 +22,6 @@
 | As a user, I would like an intuitive and clean user interface so that I can easily navigate through the app.<br>**Tasks**<br><ul><li>Bottom navigation bar</li><ul>| 5 | 3 |
   | As a user I would like to select events based on their categories<br>**Tasks**<br><ul><li>Select event catagories to search</li><li>Order events by most recent</li><li>Order by attendees</li><ul>| 5 | 4 |
   | As a user, I would like to find events close to me<br>**Tasks**<br><ul><li>Get user location</li><li>Show location on map</li><li>Different map pin colours for different event catagories</li><ul>| 8 | 5 |
-    | As a user, I do not want to see events that have already passed or were cancelled.<br>**Tasks**<br><ul><li>Delete events already passed</li><li>Delete events that where cancelled</li><ul>| 5 | 6 |
+  | As a user, I do not want to see events that have already passed or were cancelled.<br>**Tasks**<br><ul><li>Delete events already passed</li><li>Delete events that where cancelled</li><ul>| 5 | 6 |
 
 
