@@ -20,6 +20,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -88,7 +89,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
                     @Override
                     public void onTimeSet(TimePicker view, int mHour, int mMinute) {
 
-                        time = mHour +";"+ mMinute;
+                        time = mHour +":"+ new DecimalFormat("00").format(mMinute);
                         timeText.setText(time);
 
                     }
