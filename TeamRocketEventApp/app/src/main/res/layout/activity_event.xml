@@ -154,4 +154,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigation" />
 
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:onClick="cancelEvent"
+        android:text="@string/cancel_event"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/signUpButton"
+        app:layout_constraintTop_toBottomOf="@+id/nameLayout" />
+
 </android.support.constraint.ConstraintLayout>
