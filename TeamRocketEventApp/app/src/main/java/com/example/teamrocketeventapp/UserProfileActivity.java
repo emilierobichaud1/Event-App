@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,10 +35,13 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         profilePic = (ImageView) findViewById(R.id.profilePic);
 
-        sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        uid = sharedPreferences.getString(userId, "");
+        //sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        uid = user.getUid();
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference usersRef = database.child("users").child(uid);
         usersRef.addValueEventListener(new ValueEventListener() {

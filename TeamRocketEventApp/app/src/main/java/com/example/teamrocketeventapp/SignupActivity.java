@@ -72,20 +72,10 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        user = mAuth.getCurrentUser();
-        userIdtemp = user.getUid();
-        node = "users/" + userIdtemp;
-        myStorageRef = FirebaseStorage.getInstance().getReference(node);
         myRef = database.getReference();
 
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-
-        editor.putString(userId, userIdtemp);
-        editor.commit();
 
         //Get parts of the layout
         profilePicture = (ImageView) findViewById(R.id.profilePicture);
@@ -106,7 +96,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 registerUser();
-                uploadFile();
+
                 //setContentView(R.layout.activity_signup_preferences);
 
             }
@@ -199,6 +189,10 @@ public class SignupActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(SignupActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    saveUserInfo(user.getUid());    //add properties to database
+                    updateView(null);
+
                 } else {
                     Toast.makeText(SignupActivity.this, "Unsuccessful registration. Please try again.", Toast.LENGTH_SHORT).show();
                 }
@@ -207,12 +201,13 @@ public class SignupActivity extends AppCompatActivity {
         });
 
         //Sign in then and save info to database
-        mAuth.signInWithEmailAndPassword(email, password)
+/*        mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            saveUserInfo(userId);    //add properties to database
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            saveUserInfo(user.getUid());    //add properties to database
                             updateView(null);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -222,7 +217,7 @@ public class SignupActivity extends AppCompatActivity {
 
                         // ...
                     }
-                });
+                });*/
     }
 
 
@@ -240,10 +235,12 @@ public class SignupActivity extends AppCompatActivity {
 
 
         //add users/ to front of node name to keep database easily searchable
-        String node = "users/" + userId;
+        node = "users/" + userId;
 
         //Creates new node in database and saves data
         myRef.child(node).setValue(currentUser);
+
+        uploadFile();
     }
 
     public void cancel(View view) {
@@ -289,6 +286,8 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void uploadFile() {
+        myStorageRef = FirebaseStorage.getInstance().getReference(node);
+
         if (imageUri != null) {
             myStorageRef.putFile(imageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
