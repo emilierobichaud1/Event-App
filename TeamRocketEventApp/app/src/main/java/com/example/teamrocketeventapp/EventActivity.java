@@ -39,6 +39,10 @@ public class EventActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     event = snapshot.getValue(EventProperties.class);
                     getHostName();
+                    if (currentUserIsHost()) {
+                        Button cancelButton = findViewById(R.id.cancelButton);
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
@@ -81,15 +85,11 @@ public class EventActivity extends AppCompatActivity {
             Query query = eventsRef.orderByChild("id").equalTo(eventId);
             query.addListenerForSingleValueEvent(valueEventListener);
         }
-
-        if (currentUserIsHost()) {
-            Button cancelButton = findViewById(R.id.cancelButton);
-            cancelButton.setVisibility(View.VISIBLE);
-        }
     }
 
     private boolean currentUserIsHost() {
-        return user.getUid().equals(hostUser.getId());
+        String hostId = event.attendees.get(0);
+        return user.getUid().equals(hostId);
     }
 
     public void addAttendee(View view) {
@@ -119,10 +119,7 @@ public class EventActivity extends AppCompatActivity {
 
         event.addAttendee(user.getUid());
 
-
         database.getReference("events").child(eventId).setValue(event);
-
-
     }
 
 
@@ -174,6 +171,11 @@ public class EventActivity extends AppCompatActivity {
         timeTextView.setText("Time: " + event.time);
         locationTextView.setText("Location: " + event.location);
         hostTextView.setText("Host: " + hostName);
+
+        if (currentUserIsHost()) {
+            Button cancelButton = findViewById(R.id.cancelButton);
+            cancelButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void unregister(String userId) {
@@ -203,7 +205,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     public void cancelEvent(View view) {
-        if (view.getVisibility() == View.VISIBLE) {
+        if (view.getVisibility() == View.VISIBLE && event != null) {
             new AlertDialog.Builder(this)
                     .setMessage("Do you really want to cancel this event?")
                     .setPositiveButton("Yes", (dialog, which) -> {
@@ -212,17 +214,12 @@ public class EventActivity extends AppCompatActivity {
                         }
                         database.getReference("events").child(eventId).removeValue();
                         Toast.makeText(EventActivity.this, "Event cancelled", Toast.LENGTH_SHORT).show();
-                        openEventIndex(null);
+                        finish();
                     })
                     .setNegativeButton("No", null)
                     .show();
         }
 
-    }
-
-    public void openEventIndex(View view) {
-        Intent intent = new Intent(this, EventIndexActivity.class);
-        startActivity(intent);
     }
 
 }
