@@ -77,8 +77,11 @@ public class UserProperties {
         return username;
     }
 
-    public void addEvent(String userId) {
+    public void addEvent(String eventId) {
+        eventsList.add(eventId);
+    }
 
-        eventsList.add(userId);
+    public void removeEvent(String eventId) {
+        eventsList.remove(eventId);
     }
 }

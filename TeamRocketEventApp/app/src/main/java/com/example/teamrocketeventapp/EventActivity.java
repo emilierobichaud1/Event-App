@@ -1,14 +1,13 @@
 package com.example.teamrocketeventapp;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,25 +20,29 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 public class EventActivity extends AppCompatActivity {
 
     EventProperties event;
     UserProperties currentUser;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String eventId;
     private String hostName;
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private UserProperties hostUser;
 
     //needed to pull data from the database
     ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            if(dataSnapshot.exists()){
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     event = snapshot.getValue(EventProperties.class);
                     getHostName();
+                    if (currentUserIsHost()) {
+                        Button cancelButton = findViewById(R.id.cancelButton);
+                        cancelButton.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
@@ -49,9 +52,6 @@ public class EventActivity extends AppCompatActivity {
 
         }
     };
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,28 +77,28 @@ public class EventActivity extends AppCompatActivity {
             return false;
         });
 
-        if(b != null){
+        if (b != null) {
             //get the eventproperties object
             eventId = (String) b.get("eventid");
 
-            DatabaseReference eventsRef = FirebaseDatabase.getInstance().getReference("events");
-            Query query = FirebaseDatabase.getInstance().getReference("events").orderByChild("id").equalTo(eventId);
+            DatabaseReference eventsRef = database.getReference("events");
+            Query query = eventsRef.orderByChild("id").equalTo(eventId);
             query.addListenerForSingleValueEvent(valueEventListener);
-
-
-
         }
     }
 
+    private boolean currentUserIsHost() {
+        String hostId = event.attendees.get(0);
+        return user.getUid().equals(hostId);
+    }
+
     public void addAttendee(View view) {
-
-
         ValueEventListener valueEventListener2 = new ValueEventListener() {
             @Override
             //method that activates upon query
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // Get user from database and use the values to update the UI
                         currentUser = snapshot.getValue(UserProperties.class);
                         currentUser.addEvent(event.getId());
@@ -114,44 +114,49 @@ public class EventActivity extends AppCompatActivity {
         };
 
         //get the UserProperties object
-        Query usersQuery = FirebaseDatabase.getInstance().getReference("users").orderByChild("id").equalTo(user.getUid());
+        Query usersQuery = database.getReference("users").orderByChild("id").equalTo(user.getUid());
         usersQuery.addListenerForSingleValueEvent(valueEventListener2);
 
         event.addAttendee(user.getUid());
 
-
-        FirebaseDatabase.getInstance().getReference("events").child(eventId).setValue(event);
-
-
+        database.getReference("events").child(eventId).setValue(event);
     }
 
 
-    private void getHostName(){
-        Query query2 = FirebaseDatabase.getInstance().getReference("users");
+    private void getHostName() {
+        Query query2 = database.getReference("users");
         query2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        if(event.attendees.get(0).toString().equals(snapshot.getRef().getKey())) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        if (event.attendees.get(0).equals(snapshot.getRef().getKey())) {
                             UserProperties usr = snapshot.getValue(UserProperties.class);
-                            hostName = usr.getUsername();
+                            if (usr != null) {
+                                hostName = usr.getUsername();
+                                hostUser = usr;
+                            }
                             loadData();
                         }
 
                     }
                 }
             }
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
+
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
         });
     }
-    private void changeUser(UserProperties user){
-        FirebaseDatabase.getInstance().getReference("users").child(user.getId()).setValue(user);
+
+    private void changeUser(UserProperties user) {
+        database.getReference("users").child(user.getId()).setValue(user);
     }
-    private void changeEvent(EventProperties event){
-        FirebaseDatabase.getInstance().getReference("events").child(event.getId()).setValue(event);
+
+    private void changeEvent(EventProperties event) {
+        database.getReference("events").child(event.getId()).setValue(event);
     }
-    private void loadData(){
+
+    private void loadData() {
         //sets textboxex
         TextView nameTextView = findViewById(R.id.eventName);
         TextView dateTextView = findViewById(R.id.date);
@@ -167,6 +172,53 @@ public class EventActivity extends AppCompatActivity {
         locationTextView.setText("Location: " + event.location);
         hostTextView.setText("Host: " + hostName);
 
+        if (currentUserIsHost()) {
+            Button cancelButton = findViewById(R.id.cancelButton);
+            cancelButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void unregister(String userId) {
+        DatabaseReference usersReference = database.getReference("users");
+
+        Query usersQuery = usersReference.orderByChild("id").equalTo(userId);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        UserProperties user = snapshot.getValue(UserProperties.class);
+                        if (user != null) {
+                            user.removeEvent(event.getId());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        event.removeAttendee(userId);
+    }
+
+    public void cancelEvent(View view) {
+        if (view.getVisibility() == View.VISIBLE && event != null) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Do you really want to cancel this event?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        for (String userId : event.attendees) {
+                            unregister(userId);
+                        }
+                        database.getReference("events").child(eventId).removeValue();
+                        Toast.makeText(EventActivity.this, "Event cancelled", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
 
     }
 
