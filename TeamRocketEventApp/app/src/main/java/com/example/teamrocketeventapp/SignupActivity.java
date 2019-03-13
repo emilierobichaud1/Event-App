@@ -232,6 +232,7 @@ public class SignupActivity extends AppCompatActivity {
         currentUser = new UserProperties(username, email, bday, address, userId);
         currentUser.addEvent("");
         currentUser.addPreferences("");
+        currentUser.addPic(new Upload("", "default"));
 
 
         //add users/ to front of node name to keep database easily searchable
@@ -255,9 +256,9 @@ public class SignupActivity extends AppCompatActivity {
     public void updateView(View view) {
         //go to event page after sucessful registration
         //TODO change MainActivity to the userprofile page
-        setContentView(R.layout.activity_signup_preferences);
-        //Intent intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
+        //setContentView(R.layout.activity_signup_preferences);
+        Intent intent = new Intent(this, UserPreferencesActivity.class);
+        startActivity(intent);
     }
 
     public void pickImage() {

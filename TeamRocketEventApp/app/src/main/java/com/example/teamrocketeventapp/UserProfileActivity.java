@@ -1,6 +1,5 @@
 package com.example.teamrocketeventapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -91,6 +90,8 @@ public class UserProfileActivity extends AppCompatActivity {
         usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
         numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size() - 1));
-        Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
+        if (!(currentUser.picUrl.getImageUrl().isEmpty())) {
+            Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
+        }
     }
 }
