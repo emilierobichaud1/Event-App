@@ -31,8 +31,10 @@
     <string name="submit">Submit</string>
     <string name="location_placeholder">3359 Mississauga Road</string>
     <string name="title_activity_event_map">Map</string>
+    <string name="edit_event">Edit Event</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="cancel_event">Cancel Event</string>
+    <string name="confirm_edit">Confirm</string>
 </resources>

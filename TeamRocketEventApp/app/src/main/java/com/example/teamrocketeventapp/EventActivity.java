@@ -1,6 +1,7 @@
 package com.example.teamrocketeventapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -42,6 +43,8 @@ public class EventActivity extends AppCompatActivity {
                     if (currentUserIsHost()) {
                         Button cancelButton = findViewById(R.id.cancelButton);
                         cancelButton.setVisibility(View.VISIBLE);
+                        Button editButton = findViewById(R.id.editButton);
+                        editButton.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -52,6 +55,7 @@ public class EventActivity extends AppCompatActivity {
 
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +179,8 @@ public class EventActivity extends AppCompatActivity {
         if (currentUserIsHost()) {
             Button cancelButton = findViewById(R.id.cancelButton);
             cancelButton.setVisibility(View.VISIBLE);
+            Button editButton = findViewById(R.id.editButton);
+            editButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -221,5 +227,12 @@ public class EventActivity extends AppCompatActivity {
         }
 
     }
+
+    public void editEvent(View view) {
+        Intent intent = new Intent(this, EditEventActivity.class);
+        intent.putExtra("eventid", eventId);
+        startActivity(intent);
+    }
+
 
 }
