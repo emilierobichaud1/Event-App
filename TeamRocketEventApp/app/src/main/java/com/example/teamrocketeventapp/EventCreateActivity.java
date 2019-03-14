@@ -173,7 +173,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
         Toast.makeText(EventCreateActivity.this, "Event successfully created", Toast.LENGTH_SHORT).show();
 
-        updateView(null);
+        updateView(null, id);
 
     }
 
@@ -223,8 +223,9 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     }
 
     //method id called upon sucessful event creation
-    public void updateView(View view) {
+    public void updateView(View view, String eventId) {
         Intent intent = new Intent(this, EventActivity.class);
+        intent.putExtra("eventid", eventId);
         startActivity(intent);
     }
 
