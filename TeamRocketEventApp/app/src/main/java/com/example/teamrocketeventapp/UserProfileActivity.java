@@ -29,8 +29,7 @@ import com.squareup.picasso.Picasso;
 import java.util.Iterator;
 import java.util.List;
 
-
-public class UserProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class UserProfileActivity extends AppCompatActivity {
 
     public static final String userId = "userId";
     public static final String MyPREFERENCES = "MyPrefs";
@@ -48,7 +47,6 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -154,7 +152,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         usernameTextView.setText("Username: " + currentUser.getUsername());
         addressTextView.setText("Address: " + currentUser.getAddress());
         numEventTextView.setText("Number of Events: " + (currentUser.eventsList.size() - 1));
-        Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
+        if (!(currentUser.picUrl.getImageUrl().isEmpty())) {
+            Picasso.with(this).load(currentUser.picUrl.getImageUrl()).into(profilePic);
+        }
         addEventButtons(currentUser.eventsList);
 
     }

@@ -14,34 +14,34 @@
         android:minHeight="115dp"
         android:orientation="vertical"
         tools:context=".PreferencesActivity"
-        tools:layout_marginTop="-800dp">
+        tools:layout_marginTop="0dp">
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/literatureButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="888dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/book" />
 
         <ImageButton
-            android:id="@+id/imageButton4"
+            android:id="@+id/artsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="260dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/brush" />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/educationalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="260dp"
@@ -53,31 +53,31 @@
             app:srcCompat="@drawable/books" />
 
         <ImageButton
-            android:id="@+id/imageButton1"
+            android:id="@+id/fitnessButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="56dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/barbell" />
 
         <ImageButton
-            android:id="@+id/imageButton5"
+            android:id="@+id/socialButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="680dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/chat" />
 
         <ImageButton
-            android:id="@+id/imageButton6"
+            android:id="@+id/religionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="888dp"
@@ -89,7 +89,7 @@
             app:srcCompat="@drawable/cross" />
 
         <ImageButton
-            android:id="@+id/imageButton7"
+            android:id="@+id/foodButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="56dp"
@@ -101,31 +101,31 @@
             app:srcCompat="@drawable/hamburguer" />
 
         <ImageButton
-            android:id="@+id/imageButton8"
+            android:id="@+id/gamesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="468dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/joystick" />
 
         <ImageButton
-            android:id="@+id/imageButton9"
+            android:id="@+id/causesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1092dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/megaphone" />
 
         <ImageButton
-            android:id="@+id/imageButton10"
+            android:id="@+id/technologyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="468dp"
@@ -137,7 +137,7 @@
             app:srcCompat="@drawable/pc" />
 
         <ImageButton
-            android:id="@+id/imageButton11"
+            android:id="@+id/musicButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1092dp"
@@ -149,7 +149,7 @@
             app:srcCompat="@drawable/saxophone" />
 
         <ImageButton
-            android:id="@+id/imageButton12"
+            android:id="@+id/careerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1300dp"
@@ -161,19 +161,19 @@
             app:srcCompat="@drawable/suitcase" />
 
         <ImageButton
-            android:id="@+id/imageButton13"
+            android:id="@+id/otherButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1300dp"
             android:background="@null"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.812"
+            app:layout_constraintHorizontal_bias="0.844"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/marketing" />
 
         <ImageButton
-            android:id="@+id/imageButton14"
+            android:id="@+id/filmButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="680dp"
@@ -183,6 +183,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/movie" />
+
+        <Button
+            android:id="@+id/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1450dp"
+            android:onClick="updatePreferencesUI"
+            android:text="Next"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
