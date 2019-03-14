@@ -158,8 +158,9 @@ public class UserProfileActivity extends AppCompatActivity {
         addEventButtons(currentUser.eventsList);
 
     }
-    @Override
-    public void onClick(View view) {
 
+    public void signOut(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
