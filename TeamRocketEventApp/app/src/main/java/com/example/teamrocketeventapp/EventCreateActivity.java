@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -29,8 +30,12 @@ import java.util.UUID;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class EventCreateActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -38,6 +43,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private DatabaseReference myRef;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+
+    UserProperties currentUser;
 
     private Button submitButton;
     private EditText eventNameText;
@@ -167,6 +174,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         user = mAuth.getCurrentUser();
 
         eventProperties.addAttendee(user.getUid()); //adds host to first index of attendees list
+        addAttendee(null, id);
 
         myRef.child(node).setValue(eventProperties);
 
@@ -237,5 +245,35 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    public void addAttendee(View view, String eventId) {
+        ValueEventListener valueEventListener2 = new ValueEventListener() {
+            @Override
+            //method that activates upon query
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // Get user from database and use the values to update the UI
+                        currentUser = snapshot.getValue(UserProperties.class);
+                        currentUser.addEvent(eventId);
+                        changeUser(currentUser);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        Query usersQuery = database.getReference("users").orderByChild("id").equalTo(user.getUid());
+        usersQuery.addListenerForSingleValueEvent(valueEventListener2);
+
+    }
+
+    private void changeUser(UserProperties user) {
+        database.getReference("users").child(user.getId()).setValue(user);
     }
 }
