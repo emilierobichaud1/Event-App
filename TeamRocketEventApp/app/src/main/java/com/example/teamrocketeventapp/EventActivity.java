@@ -196,6 +196,7 @@ public class EventActivity extends AppCompatActivity {
                         UserProperties user = snapshot.getValue(UserProperties.class);
                         if (user != null) {
                             user.removeEvent(event.getId());
+                            database.getReference("users").child(userId).setValue(user);
                         }
                     }
                 }
