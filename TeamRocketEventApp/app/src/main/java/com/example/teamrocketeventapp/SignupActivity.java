@@ -241,6 +241,10 @@ public class SignupActivity extends AppCompatActivity {
         //Creates new node in database and saves data
         myRef.child(node).setValue(currentUser);
 
+        //Save username to username list (for login with username)
+        String usernameList = "users/usernames/" + username;
+        myRef.child(usernameList).setValue(email);
+
         uploadFile();
     }
 

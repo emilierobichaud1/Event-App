@@ -17,6 +17,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.apache.commons.validator.routines.EmailValidator;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,6 +36,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordText;
     private EditText emailText;
     private String uid;
+    private FirebaseDatabase database;
+    private DatabaseReference usernamesRef;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.enterEmail);
         passwordText = (EditText) findViewById(R.id.enterPassword);
         Auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        usernamesRef = database.getReference("users/usernames");
 
 
     }
@@ -52,13 +64,12 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void login(View view) {
+    public void checkValidInput(View view) {
 
         String pass = passwordText.getText().toString().trim();
-        String email = emailText.getText().toString().trim();
+        String userEmail = emailText.getText().toString().trim();
 
-
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(userEmail)) {
             Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
             return; //Return to stop registration
         }
@@ -67,6 +78,30 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        if (!EmailValidator.getInstance().isValid(userEmail)) {
+            usernamesRef.child(userEmail).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        email = dataSnapshot.getValue().toString();
+                        login(email, pass);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            email = userEmail;
+            login(email, pass);
+        }
+
+
+    }
+
+    private void login(String email, String pass) {
         Auth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
