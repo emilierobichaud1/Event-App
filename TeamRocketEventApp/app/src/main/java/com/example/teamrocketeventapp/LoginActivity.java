@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         String userEmail = emailText.getText().toString().trim();
 
         if (TextUtils.isEmpty(userEmail)) {
-            Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
+            Toast.makeText(this, "Please enter email or username", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
             return; //Return to stop registration
         }
         if (TextUtils.isEmpty(pass)) {
