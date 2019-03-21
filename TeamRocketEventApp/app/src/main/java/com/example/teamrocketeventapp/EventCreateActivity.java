@@ -55,7 +55,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private DatePickerDialog dpd;
     private TimePickerDialog tpd;
     private Calendar c;
-    private String BirthDate;
+    private Calendar eventCal;
+    private String eventDate;
     private String time;
 
 
@@ -84,7 +85,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
         submitButton.setOnClickListener(this);
 
-        timeText.setOnClickListener(new View.OnClickListener(){
+        timeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
@@ -96,7 +97,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
                     @Override
                     public void onTimeSet(TimePicker view, int mHour, int mMinute) {
 
-                        time = mHour +":"+ new DecimalFormat("00").format(mMinute);
+                        time = mHour + ":" + new DecimalFormat("00").format(mMinute);
                         timeText.setText(time);
 
                     }
@@ -105,23 +106,25 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        dateText.setOnClickListener(new View.OnClickListener(){
+        dateText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
                 int day = c.get(Calendar.DAY_OF_MONTH);
                 int month = c.get(Calendar.MONTH);
                 int year = c.get(Calendar.YEAR);
+                eventCal = Calendar.getInstance();
 
                 dpd = new DatePickerDialog(EventCreateActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
 
-                        BirthDate = mDay + "/" + (mMonth+1) + "/" + mYear;
-                        dateText.setText(BirthDate);
+                        eventDate = mDay + "/" + (mMonth + 1) + "/" + mYear;
+                        dateText.setText(eventDate);
+                        eventCal.set(mYear, mMonth, mDay);
 
                     }
-                }, year, month+1, day);
+                }, year, month, day);
                 dpd.show();
             }
         });
@@ -226,6 +229,10 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     @Override
     public void onClick(View view) {
         if (view == submitButton) {
+            if (eventCal.before(c)) {
+                Toast.makeText(EventCreateActivity.this, "Event date cannot be before current date", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
+                return;
+            }
             createEvent();
         }
     }

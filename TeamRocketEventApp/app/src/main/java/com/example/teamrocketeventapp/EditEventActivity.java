@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +40,7 @@ public class EditEventActivity extends AppCompatActivity {
     private DatePickerDialog dpd;
     private TimePickerDialog tpd;
     private Calendar c;
+    private Calendar eventCal;
     private String EventDate;
     private String time;
 
@@ -56,28 +58,30 @@ public class EditEventActivity extends AppCompatActivity {
         confirmButton = (Button) findViewById(R.id.confirmButton);
         cancelButton = (Button) findViewById(R.id.cancelButton);
 
-        dateTextEdit.setOnClickListener(new View.OnClickListener(){
+        dateTextEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
                 int day = c.get(Calendar.DAY_OF_MONTH);
                 int month = c.get(Calendar.MONTH);
                 int year = c.get(Calendar.YEAR);
+                eventCal = Calendar.getInstance();
 
                 dpd = new DatePickerDialog(EditEventActivity.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
 
-                        EventDate = mDay + "/" + (mMonth+1) + "/" + mYear;
+                        EventDate = mDay + "/" + (mMonth + 1) + "/" + mYear;
                         dateTextEdit.setText(EventDate);
+                        eventCal.set(mYear, mMonth, mDay);
 
                     }
-                }, year, month+1, day);
+                }, year, month, day);
                 dpd.show();
             }
         });
 
-        timeTextEdit.setOnClickListener(new View.OnClickListener(){
+        timeTextEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 c = Calendar.getInstance();
@@ -89,7 +93,7 @@ public class EditEventActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int mHour, int mMinute) {
 
-                        time = mHour +":"+ new DecimalFormat("00").format(mMinute);
+                        time = mHour + ":" + new DecimalFormat("00").format(mMinute);
                         timeTextEdit.setText(time);
 
                     }
@@ -101,6 +105,10 @@ public class EditEventActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(eventCal.before(c)){
+                    Toast.makeText(EditEventActivity.this, "Event date cannot be before current date", Toast.LENGTH_SHORT).show();  //Toast is popup msg at bottom
+                    return;
+                }
                 editEvent(view);
 
             }
@@ -146,7 +154,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     }
 
-    private void editEvent(View view){
+    private void editEvent(View view) {
         Bundle b = getIntent().getExtras();
         eventId = (String) b.get("eventid");
         eventsRef = FirebaseDatabase.getInstance().getReference().child("events").child(eventId);
@@ -165,7 +173,7 @@ public class EditEventActivity extends AppCompatActivity {
 
     }
 
-    private void updateUI(View view){
+    private void updateUI(View view) {
         Intent intent = new Intent(view.getContext(), EventActivity.class);
         intent.putExtra("eventid", eventId);
         startActivity(intent);
