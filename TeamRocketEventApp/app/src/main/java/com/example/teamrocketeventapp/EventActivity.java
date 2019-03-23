@@ -123,6 +123,7 @@ public class EventActivity extends AppCompatActivity {
                             currentUser.removeEvent(event.getId());
                             changeUser(currentUser);
                         }
+                        loadData();
                     }
                 }
             }
@@ -186,7 +187,6 @@ public class EventActivity extends AppCompatActivity {
         nameTextView.setText(event.name);
         dateTextView.setText(event.date);
         numAttendeesTextView.setText("# of Attendees: " + event.attendees.size());
-        Log.d("ABCD", Integer.toString(event.attendees.size()));
         timeTextView.setText("Time: " + event.time);
         locationTextView.setText("Location: " + event.location);
         hostTextView.setText("Host: " + hostName);
@@ -200,6 +200,10 @@ public class EventActivity extends AppCompatActivity {
         if(event.attendees.contains(user.getUid())){
             Button unattendButton = findViewById(R.id.signUpButton);
             unattendButton.setText("unattend event");
+        }
+        else{
+            Button unattendButton = findViewById(R.id.signUpButton);
+            unattendButton.setText("Sign up for this event");
         }
 
     }
