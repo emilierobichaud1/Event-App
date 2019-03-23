@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +34,7 @@ public class UserPreferencesActivity extends AppCompatActivity {
     private ImageView causesButton;
     private ImageView careerButton;
     private ImageView otherButton;
+    private TextView username;
     private Button nextButton;
     private UserProperties currentUser;
     private String uid;
@@ -53,6 +55,7 @@ public class UserPreferencesActivity extends AppCompatActivity {
         uid = user.getUid();
         node = "users/" + uid;
 
+        username = (TextView) findViewById(R.id.usernameView);
         foodButton = (ImageView) findViewById(R.id.foodButton);
         fitnessButton = (ImageView) findViewById(R.id.fitnessButton);
         educationalButton = (ImageView) findViewById(R.id.educationalButton);
@@ -74,6 +77,7 @@ public class UserPreferencesActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentUser = dataSnapshot.getValue(UserProperties.class);
+                username.setText(currentUser.username);
             }
 
             @Override
