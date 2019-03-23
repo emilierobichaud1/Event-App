@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -72,6 +73,10 @@ public class EventActivity extends AppCompatActivity {
                     Intent intent = new Intent(this, EventIndexActivity.class);
                     startActivity(intent);
                     return true;
+                case R.id.navigation_events:
+                    Intent intent3 = new Intent(this, EventIndexActivity.class);
+                    startActivity(intent3);
+                    return true;
                 case R.id.navigation_profile:
                     // Switch to event index when "Events" button is pressed
                     Intent intent2 = new Intent(this, UserProfileActivity.class);
@@ -96,6 +101,7 @@ public class EventActivity extends AppCompatActivity {
         return user.getUid().equals(hostId);
     }
 
+    //activates upon button click
     public void addAttendee(View view) {
         ValueEventListener valueEventListener2 = new ValueEventListener() {
             @Override
@@ -105,8 +111,18 @@ public class EventActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // Get user from database and use the values to update the UI
                         currentUser = snapshot.getValue(UserProperties.class);
-                        currentUser.addEvent(event.getId());
-                        changeUser(currentUser);
+                        if(!currentUser.eventsList.contains(event.getId())){ //attend event
+                            event.addAttendee(user.getUid());
+                            changeEvent(event);
+                            currentUser.addEvent(event.getId());
+                            changeUser(currentUser);
+                        }
+                        else{ //unattend event
+                            event.removeAttendee(user.getUid());
+                            changeEvent(event);
+                            currentUser.removeEvent(event.getId());
+                            changeUser(currentUser);
+                        }
                     }
                 }
             }
@@ -120,8 +136,6 @@ public class EventActivity extends AppCompatActivity {
         //get the UserProperties object
         Query usersQuery = database.getReference("users").orderByChild("id").equalTo(user.getUid());
         usersQuery.addListenerForSingleValueEvent(valueEventListener2);
-
-        event.addAttendee(user.getUid());
 
         database.getReference("events").child(eventId).setValue(event);
     }
@@ -172,6 +186,7 @@ public class EventActivity extends AppCompatActivity {
         nameTextView.setText(event.name);
         dateTextView.setText(event.date);
         numAttendeesTextView.setText("# of Attendees: " + event.attendees.size());
+        Log.d("ABCD", Integer.toString(event.attendees.size()));
         timeTextView.setText("Time: " + event.time);
         locationTextView.setText("Location: " + event.location);
         hostTextView.setText("Host: " + hostName);
@@ -182,6 +197,11 @@ public class EventActivity extends AppCompatActivity {
             Button editButton = findViewById(R.id.editButton);
             editButton.setVisibility(View.VISIBLE);
         }
+        if(event.attendees.contains(user.getUid())){
+            Button unattendButton = findViewById(R.id.signUpButton);
+            unattendButton.setText("unattend event");
+        }
+
     }
 
     private void unregister(String userId) {
