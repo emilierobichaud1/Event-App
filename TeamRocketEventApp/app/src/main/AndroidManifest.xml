@@ -26,9 +26,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".UserProfileActivity" />
+        <activity android:name=".UserProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity android:name=".EventCreateActivity" />
-        <activity android:name=".EventIndexActivity" />
+        <activity android:name=".EventIndexActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity android:name=".EventActivity" />
         <activity android:name=".SignupActivity" />
         <activity android:name=".LoginActivity" />
