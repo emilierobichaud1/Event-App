@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.codetroopers.betterpickers.datepicker.DatePickerBuilder;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -64,7 +65,9 @@ public class SignupActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private DatePickerDialog dpd;
     private Calendar c;
-    private String BirthDate;
+    private Calendar c2;
+    private Calendar BirthDate;
+    private String bdayString;
     private String userIdtemp;
 
     @Override
@@ -118,6 +121,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
+
         bdayText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,16 +129,23 @@ public class SignupActivity extends AppCompatActivity {
                 int day = c.get(Calendar.DAY_OF_MONTH);
                 int month = c.get(Calendar.MONTH);
                 int year = c.get(Calendar.YEAR);
+                BirthDate = Calendar.getInstance();
 
-                dpd = new DatePickerDialog(SignupActivity.this, new DatePickerDialog.OnDateSetListener() {
+                dpd = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Dialog, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int mYear, int mMonth, int mDay) {
-
-                        BirthDate = mDay + "/" + (mMonth + 1) + "/" + mYear;
-                        bdayText.setText(BirthDate);
+                        bdayString = mDay + "/" + (mMonth + 1) + "/" + mYear;
+                        bdayText.setText(bdayString);
 
                     }
                 }, day, month, year);
+                dpd.getDatePicker().updateDate(2001, 0, 1);
+                c.set(1900, 0, 1);
+                dpd.getDatePicker().setMinDate(c.getTimeInMillis());
+                c.add(Calendar.YEAR, +119);
+                dpd.getDatePicker().setMaxDate(c.getTimeInMillis());
+                //dpd.getDatePicker().updateDate(2001, 0, 1);
+                dpd.getDatePicker().setLayoutMode(1);
                 dpd.show();
             }
         });
@@ -225,7 +236,7 @@ public class SignupActivity extends AppCompatActivity {
     private void saveUserInfo(String userId) {
         String username = userText.getText().toString().trim();
         String email = emailText.getText().toString().trim();
-        String bday = BirthDate;
+        String bday = bdayString;
         String address = addressText.getText().toString().trim();
 
         //Create user object to pass into database call
