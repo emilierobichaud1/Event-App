@@ -102,29 +102,28 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void addEventButtons(List<String> eventList){
-
-        for (Iterator<String> iter = eventList.iterator(); iter.hasNext();){
+        Iterator<String> iter = eventList.iterator();
+        while (iter.hasNext()){
 
             String eventId = iter.next();
-            if (eventId == ""){
-                continue;
+            if (eventId.isEmpty() == false) {
+                eventsRef = FirebaseDatabase.getInstance().getReference().child("events").child(eventId);
+
+                ValueEventListener eventListener = new ValueEventListener() {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        event = dataSnapshot.getValue(EventProperties.class);
+                        displayEventButtons(event);
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                eventsRef.addListenerForSingleValueEvent(eventListener);
             }
-
-            eventsRef = FirebaseDatabase.getInstance().getReference().child("events").child(eventId);
-
-            ValueEventListener eventListener = new ValueEventListener() {
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    event = dataSnapshot.getValue(EventProperties.class);
-                    displayEventButtons(event);
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
-
-            eventsRef.addListenerForSingleValueEvent(eventListener);
-
         }
 
 
