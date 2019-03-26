@@ -41,8 +41,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import im.delight.android.location.SimpleLocation;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -85,11 +90,26 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if (dataSnapshot.exists()) {
+                DateFormat dateFormat = new SimpleDateFormat("d/M/y", Locale.CANADA);
+
                 searchNames = new ArrayList<>();
                 adapter.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     EventProperties event = snapshot.getValue(EventProperties.class);
-                    if (event != null) {
+                    if (event == null) {
+                        continue;
+                    }
+
+                    Date eventDate;
+                    Date today = new Date();
+                    try {
+                        eventDate = dateFormat.parse(event.getDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                    if (eventDate.after(today)) {
                         searchNames.add(event.name);
                         adapter.add(event);
                         addEventToMap(event);
