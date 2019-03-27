@@ -123,6 +123,8 @@ public class EventActivity extends AppCompatActivity {
                         else{ //unattend event
                             event.removeAttendee(currentUser.getId());
                             event.update();
+                            currentUser.removeEvent(event.getId());
+                            currentUser.update();
                         }
                         loadData();
                     }

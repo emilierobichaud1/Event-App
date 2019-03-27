@@ -80,37 +80,7 @@ public class EventProperties {
     }
 
     public void removeAttendee(String userId) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference usersReference = database.getReference("users");
-
-        Query usersQuery = usersReference.orderByChild("id").equalTo(userId);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        UserProperties user = snapshot.getValue(UserProperties.class);
-                        if (user != null) {
-                            user.removeEvent(getId());
-                            user.update();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         attendees.remove(userId);
-    }
-
-    private void removeAllAttendees() {
-        for (String userId : attendees) {
-            removeAttendee(userId);
-        }
     }
 
     public void update() {
@@ -119,9 +89,32 @@ public class EventProperties {
     }
 
     public void delete() {
-        removeAllAttendees();
-
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("users");
+
+        for (String userId : attendees) {
+            Query query = usersReference.orderByChild("id").equalTo(userId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            UserProperties user = childSnapshot.getValue(UserProperties.class);
+                            if (user != null) {
+                                user.removeEvent(id);
+                                user.update();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         database.getReference("events").child(id).removeValue();
     }
 }
