@@ -7,4 +7,4 @@
 - Ryan Liu (liuryan4)
 - Emilie Robichaud (robich22)
 
-We are looking to fix bugs that resulted from work from the last sprint.
+We are looking to fix bugs that resulted from work from the last sprint. We also  plan on implementing the home page
