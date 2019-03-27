@@ -1,9 +1,18 @@
-/**
- * Class is used to save user info in database
- * Firebase uses Java object to save data
+/*
+  Class is used to save user info in database
+  Firebase uses Java object to save data
  */
 
 package com.example.teamrocketeventapp;
+
+import android.support.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +67,9 @@ public class EventProperties {
         attendees.add(userId);
     }
 
-    public void removeAttendee(String userId) {
-        attendees.remove(userId);
-    }
-
     public String toString() {
         return name;
     }
-
 
     public String getCategory() {
         return category;
@@ -73,6 +77,52 @@ public class EventProperties {
 
     public List<Double> getCoordinates() {
         return coordinates;
+    }
+
+    public void removeAttendee(String userId) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersReference = database.getReference("users");
+
+        Query usersQuery = usersReference.orderByChild("id").equalTo(userId);
+        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        UserProperties user = snapshot.getValue(UserProperties.class);
+                        if (user != null) {
+                            user.removeEvent(getId());
+                            user.update();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        attendees.remove(userId);
+    }
+
+    private void removeAllAttendees() {
+        for (String userId : attendees) {
+            removeAttendee(userId);
+        }
+    }
+
+    public void update() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference("events").child(id).setValue(this);
+    }
+
+    public void delete() {
+        removeAllAttendees();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference("events").child(id).removeValue();
     }
 }
 

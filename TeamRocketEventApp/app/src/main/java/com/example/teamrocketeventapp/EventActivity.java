@@ -1,13 +1,11 @@
 package com.example.teamrocketeventapp;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -103,7 +101,7 @@ public class EventActivity extends AppCompatActivity {
 
     //activates upon button click
     public void addAttendee(View view) {
-        ValueEventListener valueEventListener2 = new ValueEventListener() {
+        ValueEventListener attendeeListener = new ValueEventListener() {
             @Override
             //method that activates upon query
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -111,17 +109,20 @@ public class EventActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // Get user from database and use the values to update the UI
                         currentUser = snapshot.getValue(UserProperties.class);
+
+                        if (currentUser == null) {
+                            continue;
+                        }
+
                         if(!currentUser.eventsList.contains(event.getId())){ //attend event
                             event.addAttendee(user.getUid());
-                            changeEvent(event);
+                            event.update();
                             currentUser.addEvent(event.getId());
-                            changeUser(currentUser);
+                            currentUser.update();
                         }
                         else{ //unattend event
-                            event.removeAttendee(user.getUid());
-                            changeEvent(event);
-                            currentUser.removeEvent(event.getId());
-                            changeUser(currentUser);
+                            event.removeAttendee(currentUser.getId());
+                            event.update();
                         }
                         loadData();
                     }
@@ -136,7 +137,7 @@ public class EventActivity extends AppCompatActivity {
 
         //get the UserProperties object
         Query usersQuery = database.getReference("users").orderByChild("id").equalTo(user.getUid());
-        usersQuery.addListenerForSingleValueEvent(valueEventListener2);
+        usersQuery.addListenerForSingleValueEvent(attendeeListener);
 
         database.getReference("events").child(eventId).setValue(event);
     }
@@ -165,14 +166,6 @@ public class EventActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-    }
-
-    private void changeUser(UserProperties user) {
-        database.getReference("users").child(user.getId()).setValue(user);
-    }
-
-    private void changeEvent(EventProperties event) {
-        database.getReference("events").child(event.getId()).setValue(event);
     }
 
     private void loadData() {
@@ -208,42 +201,12 @@ public class EventActivity extends AppCompatActivity {
 
     }
 
-    private void unregister(String userId) {
-        DatabaseReference usersReference = database.getReference("users");
-
-        Query usersQuery = usersReference.orderByChild("id").equalTo(userId);
-        usersQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        UserProperties user = snapshot.getValue(UserProperties.class);
-                        if (user != null) {
-                            user.removeEvent(event.getId());
-                            database.getReference("users").child(userId).setValue(user);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        event.removeAttendee(userId);
-    }
-
     public void cancelEvent(View view) {
         if (view.getVisibility() == View.VISIBLE && event != null) {
             new AlertDialog.Builder(this)
                     .setMessage("Do you really want to cancel this event?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        for (String userId : event.attendees) {
-                            unregister(userId);
-                        }
-                        database.getReference("events").child(eventId).removeValue();
+                        event.delete();
                         Toast.makeText(EventActivity.this, "Event cancelled", Toast.LENGTH_SHORT).show();
                         finish();
                     })
