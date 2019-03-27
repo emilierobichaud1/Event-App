@@ -56,7 +56,7 @@ public class EventCategoryListActivity extends AppCompatActivity {
                 = item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    Intent intent1 = new Intent(this, EventIndexActivity.class);
+                    Intent intent1 = new Intent(this, HomePageActivity.class);
                     startActivity(intent1);
                     return true;
                 case R.id.navigation_events:

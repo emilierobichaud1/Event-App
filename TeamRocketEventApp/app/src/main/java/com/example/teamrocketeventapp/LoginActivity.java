@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
     public void updateUI(View view) {
         //go to event page after sucessful login
         //TODO change MainActivity to the userprofile page
-        Intent intent = new Intent(this, EventIndexActivity.class); //temporary change for search testing
+        Intent intent = new Intent(this, HomePageActivity.class); //temporary change for search testing
         startActivity(intent);
     }
 

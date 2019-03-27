@@ -1,8 +1,10 @@
 package com.example.teamrocketeventapp;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -51,6 +53,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText dateText;
     private EditText timeText;
     private EditText locationText;
+    private EditText cityText;
+    private EditText provinceText;
     private Spinner categorySpinner;
     private DatePickerDialog dpd;
     private TimePickerDialog tpd;
@@ -76,6 +80,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         dateText = (EditText) findViewById(R.id.dateEditText);
         timeText = (EditText) findViewById(R.id.timeEditText);
         locationText = (EditText) findViewById(R.id.locationEditText);
+        cityText = (EditText) findViewById(R.id.cityEditText);
+        provinceText = (EditText) findViewById(R.id.provinceEditText);
         categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
 
         categorySpinner.setOnItemSelectedListener(this);
@@ -136,6 +142,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         String date = dateText.getText().toString().trim();
         String time = timeText.getText().toString().trim();
         String location = locationText.getText().toString().trim();
+        String city = cityText.getText().toString().trim();
+        String province = provinceText.getText().toString().trim();
         String category = categorySpinner.getSelectedItem().toString();
 
         //Error check user input here
@@ -155,12 +163,22 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
             Toast.makeText(this, "Please enter location", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (TextUtils.isEmpty(city)) {
+            Toast.makeText(this, "Please enter city", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(province)) {
+            Toast.makeText(this, "Please enter province", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (category.equals("Category")) {
             Toast.makeText(this, "Please select category", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String id = UUID.randomUUID().toString();
+
+        location = location + ", " + city + ", " + province; //Update location to include city and province
 
         List<Double> coordinates = new ArrayList<>();
 
@@ -169,6 +187,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         EventProperties eventProperties = new EventProperties(eventName, date, time, location, coordinates, category, id);
 
