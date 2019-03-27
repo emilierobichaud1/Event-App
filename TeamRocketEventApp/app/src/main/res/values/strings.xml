@@ -16,6 +16,8 @@
     <string name="event_sign_up">Sign up for this event</string>
     <string name="event_attendees"># of Attendees:</string>
     <string name="event_location">Location</string>
+    <string name="event_city">City</string>
+    <string name="event_province">Province</string>
     <string name="event_time">Time</string>
     <string name="event_host">Host:</string>
     <string name="home">Home</string>

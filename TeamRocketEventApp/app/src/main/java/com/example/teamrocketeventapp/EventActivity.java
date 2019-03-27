@@ -1,6 +1,9 @@
 package com.example.teamrocketeventapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +25,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class EventActivity extends AppCompatActivity {
 
     EventProperties event;
@@ -29,6 +36,7 @@ public class EventActivity extends AppCompatActivity {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String eventId;
+    private List<Double> coordinates = new ArrayList<>();
     private String hostName;
     private UserProperties hostUser;
 
@@ -192,6 +200,24 @@ public class EventActivity extends AppCompatActivity {
         hostTextView.setText("Host: " + hostName);
 
         if (currentUserIsHost()) {
+            try {
+                coordinates = addressToCoordinates(event.location);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (coordinates.get(0) == 0 && coordinates.get(1) == 0) {
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+                builder.setMessage("Warning: Location could not be found on map. Edit location on event page if needed.")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                android.app.AlertDialog alert = builder.create();
+                alert.show();
+            }
             Button cancelButton = findViewById(R.id.cancelButton);
             cancelButton.setVisibility(View.VISIBLE);
             Button editButton = findViewById(R.id.editButton);
@@ -257,6 +283,22 @@ public class EventActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EditEventActivity.class);
         intent.putExtra("eventid", eventId);
         startActivity(intent);
+    }
+
+    //Converts address to coordinates for easier plotting on map
+    public List<Double> addressToCoordinates(String address) throws IOException {
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> addresses = geocoder.getFromLocationName(address, 1);
+        double latitude = 0, longitude = 0;
+
+        if (addresses.size() > 0) {
+            latitude = addresses.get(0).getLatitude();
+            longitude = addresses.get(0).getLongitude();
+        }
+        List<Double> coordinates = new ArrayList<>();
+        coordinates.add(latitude);
+        coordinates.add(longitude);
+        return coordinates;
     }
 
 
