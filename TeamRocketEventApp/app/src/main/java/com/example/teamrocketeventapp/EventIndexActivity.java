@@ -1,39 +1,25 @@
 package com.example.teamrocketeventapp;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.model.BitmapDescriptor;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,11 +27,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import im.delight.android.location.SimpleLocation;
-import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class EventIndexActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -67,7 +57,6 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
 
 
     DatabaseReference eventsRef;
-    private FirebaseDatabase database;
     ValueEventListener valueEventListener = new ValueEventListener() {
 
         private void addEventToMap(EventProperties event) {
@@ -85,11 +74,28 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         //method that activates upon query
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             if (dataSnapshot.exists()) {
+                DateFormat dateFormat = new SimpleDateFormat("d/M/y", Locale.CANADA);
+
                 searchNames = new ArrayList<>();
                 adapter.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     EventProperties event = snapshot.getValue(EventProperties.class);
-                    if (event != null) {
+                    if (event == null) {
+                        continue;
+                    }
+
+                    Date eventDate;
+                    Date today = new Date();
+                    try {
+                        eventDate = dateFormat.parse(event.getDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                    if (eventDate.before(today)) {
+                        event.delete();
+                    } else {
                         searchNames.add(event.name);
                         adapter.add(event);
                         addEventToMap(event);
@@ -153,14 +159,6 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
         intent.putExtra("category", cat);
         startActivity(intent);
     };
-
-
-    private boolean inArea(EventProperties event) {
-        LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-        List<Double> coordinateList = event.getCoordinates();
-        LatLng coordinates = new LatLng(coordinateList.get(0), coordinateList.get(1));
-        return bounds.contains(coordinates);
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

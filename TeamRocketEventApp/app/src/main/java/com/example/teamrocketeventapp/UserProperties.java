@@ -1,9 +1,11 @@
-/**
- * Class is used to save user info in database
- * Firebase uses Java object to save data
+/*
+  Class is used to save user info in database
+  Firebase uses Java object to save data
  */
 
 package com.example.teamrocketeventapp;
+
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,5 +85,10 @@ public class UserProperties {
 
     public void removeEvent(String eventId) {
         eventsList.remove(eventId);
+    }
+
+    public void update() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.getReference("users").child(id).setValue(this);
     }
 }
