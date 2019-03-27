@@ -180,6 +180,8 @@ public class EventIndexActivity extends AppCompatActivity implements OnMapReadyC
                 = item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    Intent intent1 = new Intent(this, HomePageActivity.class); //temporary change for search testing
+                    startActivity(intent1);
                     return true;
                 case R.id.navigation_events:
                     return true;
