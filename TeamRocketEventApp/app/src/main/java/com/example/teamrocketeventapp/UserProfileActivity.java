@@ -87,10 +87,12 @@ public class UserProfileActivity extends AppCompatActivity {
                     case R.id.navigation_profile:
                         return true;
                     case R.id.navigation_events:
-                        return true;
-                    case R.id.navigation_home:
                         Intent intent1 = new Intent(UserProfileActivity.this, EventIndexActivity.class); //temporary change for search testing
                         startActivity(intent1);
+                        return true;
+                    case R.id.navigation_home:
+                        Intent intent2 = new Intent(UserProfileActivity.this, HomePageActivity.class); //temporary change for search testing
+                        startActivity(intent2);
                         return true;
                 }
                 return false;

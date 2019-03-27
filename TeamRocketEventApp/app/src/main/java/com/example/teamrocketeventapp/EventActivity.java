@@ -78,7 +78,7 @@ public class EventActivity extends AppCompatActivity {
                 // TODO: add navigation for other buttons (needs those pages implemented)
                 case R.id.navigation_home:
                     // Switch to event index when "Events" button is pressed
-                    Intent intent = new Intent(this, EventIndexActivity.class);
+                    Intent intent = new Intent(this, HomePageActivity.class);
                     startActivity(intent);
                     return true;
                 case R.id.navigation_events:
