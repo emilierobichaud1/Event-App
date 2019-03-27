@@ -24,6 +24,6 @@
 | As a user I would like to login with my username as it is quicker.| 2 | 4 |
 | As a user I do not want to see events that have already passed. <br>**Tasks:**<br><ul><li>Check event date compared to current date</li><li>Remove old events</li></ul>| 2 | 5 |
 | As a user, I would like to view the location on the event page for easier reference.| 5 | 6 |
-| As a user, I would like to upload an image and display it on my event page for more customization. br>**Tasks:**<br><ul><li>Upload image</li><li>Edit image</li></ul>| 5 | 7 |
+| As a user, I would like to upload an image and display it on my event page for more customization. <br>**Tasks:**<br><ul><li>Upload image</li><li>Edit image</li></ul>| 5 | 7 |
 
 
