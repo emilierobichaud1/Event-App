@@ -8,16 +8,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -30,6 +34,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +45,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 public class EventCreateActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -47,6 +58,7 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private FirebaseUser user;
 
     UserProperties currentUser;
+    private static final int PICK_IMAGE = 1;
 
     private Button submitButton;
     private EditText eventNameText;
@@ -56,12 +68,18 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
     private EditText cityText;
     private EditText provinceText;
     private Spinner categorySpinner;
+    private StorageReference myStorageRef;
     private DatePickerDialog dpd;
     private TimePickerDialog tpd;
     private Calendar c;
     private Calendar eventCal;
     private String eventDate;
     private String time;
+    private FloatingActionButton buttonLoadPicture;
+    private Uri imageUri;
+    private ImageView eventImage;
+    private String node;
+    private EventProperties event;
 
 
     @Override
@@ -83,6 +101,8 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         cityText = (EditText) findViewById(R.id.cityEditText);
         provinceText = (EditText) findViewById(R.id.provinceEditText);
         categorySpinner = (Spinner) findViewById(R.id.categorySpinner);
+        buttonLoadPicture = (FloatingActionButton) findViewById(R.id.buttonLoadPicture);
+        eventImage = (ImageView) findViewById(R.id.eventImage);
 
         categorySpinner.setOnItemSelectedListener(this);
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getCategoriesList());
@@ -132,6 +152,14 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
                     }
                 }, year, month, day);
                 dpd.show();
+            }
+        });
+
+        buttonLoadPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickImage();
+
             }
         });
     }
@@ -189,16 +217,19 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
         }
 
 
-        EventProperties eventProperties = new EventProperties(eventName, date, time, location, coordinates, category, id);
+        event = new EventProperties(eventName, date, time, location, coordinates, category, id);
+        event.addPic(new Upload("", "default"));
 
-        String node = "events/" + id;
+        node = "events/" + id;
 
         user = mAuth.getCurrentUser();
 
-        eventProperties.addAttendee(user.getUid()); //adds host to first index of attendees list
+        event.addAttendee(user.getUid()); //adds host to first index of attendees list
         addAttendee(null, id);
 
-        myRef.child(node).setValue(eventProperties);
+        myRef.child(node).setValue(event);
+
+        uploadFile();
 
 
         Toast.makeText(EventCreateActivity.this, "Event successfully created", Toast.LENGTH_SHORT).show();
@@ -301,5 +332,53 @@ public class EventCreateActivity extends AppCompatActivity implements View.OnCli
 
     private void changeUser(UserProperties user) {
         database.getReference("users").child(user.getId()).setValue(user);
+    }
+
+    public void pickImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+
+            Picasso.with(this).load(imageUri).into(eventImage);
+        }
+    }
+
+    private void uploadFile() {
+        myStorageRef = FirebaseStorage.getInstance().getReference(node);
+
+        if (imageUri != null) {
+            myStorageRef.putFile(imageUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return myStorageRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        Log.e("logt", "then: " + downloadUri.toString());
+                        Upload upload = new Upload(downloadUri.toString(), node);
+                        myStorageRef = FirebaseStorage.getInstance().getReference(node);
+                        event.addPic(upload);
+                        myRef.child(node).setValue(event);
+                    } else {
+                        Toast.makeText(EventCreateActivity.this, "Upload Failed", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 }

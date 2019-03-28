@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class EventActivity extends AppCompatActivity {
     private List<Double> coordinates = new ArrayList<>();
     private String hostName;
     private UserProperties hostUser;
+    private ImageView eventPic;
 
     //needed to pull data from the database
     ValueEventListener valueEventListener = new ValueEventListener() {
@@ -70,6 +73,7 @@ public class EventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
         Bundle b = getIntent().getExtras();
+        eventPic = (ImageView) findViewById(R.id.eventHeaderImage);
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(menuItem -> {
@@ -194,6 +198,10 @@ public class EventActivity extends AppCompatActivity {
         timeTextView.setText("Time: " + event.time);
         locationTextView.setText("Location: " + event.location);
         hostTextView.setText("Host: " + hostName);
+
+        if (!(event.picUrl.getImageUrl().isEmpty())) {
+            Picasso.with(this).load(event.picUrl.getImageUrl()).into(eventPic);
+        }
 
         if (currentUserIsHost()) {
             try {

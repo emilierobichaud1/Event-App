@@ -26,6 +26,7 @@ public class EventProperties {
     public String id;
     public List<String> attendees;
     public List<Double> coordinates;
+    public Upload picUrl;
 
     public EventProperties() {
 
@@ -40,6 +41,7 @@ public class EventProperties {
         this.coordinates = coordinates;
         this.id = id;
         this.attendees = new ArrayList<>();
+        this.picUrl = new Upload();
     }
 
     public String getName() {
@@ -116,6 +118,9 @@ public class EventProperties {
         }
 
         database.getReference("events").child(id).removeValue();
+    }
+    public void addPic(Upload newUpload) {
+        this.picUrl = newUpload;
     }
 }
 
