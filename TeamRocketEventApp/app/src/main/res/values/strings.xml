@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Team Rocket Event App</string>
+    <string name="app_name">Rocket Events</string>
     <string name="Logo_text">Logo Placeholder</string>
     <string name="log_in">Log In</string>
     <string name="sign_up">Sign Up</string>
