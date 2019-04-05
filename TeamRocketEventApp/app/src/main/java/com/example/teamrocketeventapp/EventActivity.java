@@ -75,27 +75,29 @@ public class EventActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         eventPic = (ImageView) findViewById(R.id.eventHeaderImage);
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                // TODO: add navigation for other buttons (needs those pages implemented)
+        //navbar stuff
+        BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+                = item -> {
+            switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    // Switch to event index when "Events" button is pressed
-                    Intent intent = new Intent(this, HomePageActivity.class);
-                    startActivity(intent);
+                    Intent intent1 = new Intent(this, HomePageActivity.class);
+                    startActivity(intent1);
                     return true;
                 case R.id.navigation_events:
                     Intent intent3 = new Intent(this, EventIndexActivity.class);
                     startActivity(intent3);
                     return true;
                 case R.id.navigation_profile:
-                    // Switch to event index when "Events" button is pressed
+                    //mTextMessage.setText(R.string.profile);
                     Intent intent2 = new Intent(this, UserProfileActivity.class);
                     startActivity(intent2);
                     return true;
             }
             return false;
-        });
+        };
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.getMenu().getItem(1).setChecked(true);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if (b != null) {
             //get the eventproperties object
