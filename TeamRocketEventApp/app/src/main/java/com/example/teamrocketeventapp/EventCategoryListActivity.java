@@ -72,7 +72,7 @@ public class EventCategoryListActivity extends AppCompatActivity {
             return false;
         };
         BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.getMenu().getItem(0).setChecked(true);
+        navigation.getMenu().getItem(1).setChecked(true);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         if(b != null){
